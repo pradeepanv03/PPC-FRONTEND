@@ -59,7 +59,11 @@ const RemovedProperty = () => {
   };
 
   return (
-    <Container fluid className="p-3 my-3" style={{ maxHeight: "60vh", width: "480px" }}>
+    <div className="container d-flex align-items-center justify-content-center p-0" style={{fontFamily:"Inter, sans-serif",}}>
+     
+     <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{ maxWidth: '500px', margin: 'auto', width: '100%' }}>
+     
+     
       <Helmet>
         <title>Pondy Property | Removed Properties</title>
       </Helmet>
@@ -68,6 +72,7 @@ const RemovedProperty = () => {
             <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
           </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>Removed Properties </h3> </div>
     
+          <div className="row g-2 w-100">
 
       {removedUsers.length > 0 ? (
         removedUsers.map((user) => (
@@ -147,8 +152,10 @@ const RemovedProperty = () => {
           <p>No Removed Property Data Found.</p>
         </div>
       )}
-    </Container>
-  );
+       </div> 
+
+ </div> 
+ </div> );
 };
 
 export default RemovedProperty;
