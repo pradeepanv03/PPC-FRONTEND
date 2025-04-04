@@ -24,9 +24,7 @@ import BusinessOpportunity from './BusinessOpportunity'
 import OurSupport from './OurSupport'
 import AboutMobile from './AboutMobile'
 import RefundMobile from './RefundMobile'
-import { PhoneNumberProvider } from '../context/PhoneNumberContext'; // Import the context provider
 import MyProfile from './MyProfile'
-// import CardsDemo from './Detail/InterestOwner'
 import MyPlan from './MyPlan'
 import ContactedPage from './ContactedPage'
 import LeadsCenter from './LeadsCenter'
@@ -45,7 +43,6 @@ import OfferFromBuyer from './OfferFromBuyer'
 import ViewedBuyers from './ViewedBuyers'
 import BuyerLists from './BuyerLists'
 import Owner from './Owner'
-import InterestBuyer from './Detail/InterestOwner'
 import BuyerInterest from './Detail/BuyerInterest'
 import NeedHelpOwner from './Detail/NeedHelpOwner'
 import NeedHelpBuyer from './Detail/NeedHelpBuyer'
@@ -62,7 +59,6 @@ import AddProperty from './AddProperty'
 import MyProperties from './MyProperties'
 import Removedproperty from './RemovedProperty'
 import AddPricingPlans from './AddPricingPlans'
-import MyPlans from './ExpiredPlans'
 import ExpiredPlans from './ExpiredPlans';
 import Notification  from './Notification'
 import ZeroView from './ZeroView'
@@ -79,10 +75,8 @@ import DetailBuyerAssistance from './DetailBuyerAssistance'
 import FeaturedProperty from './FeatureProperty'
 import ShippingAndDelivery from './ShipingAndDelivery'
 import ContactUs from './ContactUs'
-// import NotificationList from './NotificationList'
 import MatchedOwner from './Detail/MatchedOwner';
 import MatchedBuyer from './Detail/MatchedBuyer'
-import BuyerList from './BuyerList';
 import PyProperty from './PyProperty';
 import TermsAndCondition from './TermsAndCondition'
 import TermsAndConditionWeb from './TermsAndConditionWeb'
@@ -121,7 +115,6 @@ export default function RouterPage() {
     <BrowserRouter>
     <Routes>
     <Route path="/" element={<App />} />
-    {/* <Route path="/mobileviews" element={<MobileViews />} /> */}
     <Route path="/mobileviews" element={isAuthenticated ? <MobileViews phone={phoneNumber} /> : <App to="/" />} />
     <Route path="/login" element={<Login onLogin={handleLogin} />} />
     <Route path="/Construction" element={isAuthenticated ? <Building phone={phoneNumber} /> : <App to="/" />} />
@@ -148,7 +141,6 @@ export default function RouterPage() {
         <Route path='/pricing-plans' element={< AddPlan  />} />
         <Route path='/shiping-delivery' element={< ShippingAndDelivery  />} />
         <Route path='/contact-web' element={< ContactUs   />} />
-        {/* <Route path='/py-property' element={< PyProperty  {isAuthenticated ? <MobileViews phone={phoneNumber} /> : <App to="/" />} /> */}
         <Route path='/contactus' element={< ContactedPage />} />
         <Route path='/leads' element={< LeadsCenter />} />
         <Route path='/matched-buyers' element={isAuthenticated ? <MatchedBuyers phone={phoneNumber} /> : <App to="/" />} />
@@ -165,7 +157,6 @@ export default function RouterPage() {
         <Route path='/photo-request-send' element={< PhotoRequestSent />} />
         <Route path='/offer-from-buyer' element={< OfferFromBuyer  />} />
         <Route path='/view-buyers' element={< ViewedBuyers />} />
-        {/* <Route path='/buyer-lists' element={< BuyerList />} /> */}
         <Route path='/buyer-lists' element={< BuyerLists/>} />
 
         <Route path='/owner' element={< Owner />} />
@@ -196,7 +187,6 @@ export default function RouterPage() {
         <Route path='/add-property/:phoneNumber' element={isAuthenticated ? <AddProperty phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/my-property' element={isAuthenticated ? <MyProperties phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/removed-property' element={isAuthenticated ? <Removedproperty phone={phoneNumber} /> : <App to="/" />} />
-        {/* <Route path='/notification/:phoneNumber' element={<NotificationList{isAuthenticated ? <MobileViews phone={phoneNumber} /> : <App to="/" />} /> */}
         <Route path='/zero-view' element={isAuthenticated ? <ZeroView phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/favorite-remove-owner/:phoneNumber' element={isAuthenticated ? <FavoriteRemovedOwner phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/favorite-remove-buyer/:phoneNumber' element={isAuthenticated ? <FavoriteRemovedBuyer phone={phoneNumber} /> : <App to="/" />} />
