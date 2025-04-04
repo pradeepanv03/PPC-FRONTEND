@@ -97,7 +97,7 @@ const fetchActivePlans = async () => {
       <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
         <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
       </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>Upgrade Memership</h3> </div>
-      <img src={hom} alt="" className='w-100 m-0 mt-2'/>
+      <img src={hom} alt="" className='w-100 m-0 mt-1 p-0'/>
        {message && (
         <p className='text-bold' style={{ color: message.type === 'success' ? 'green' : 'red', textAlign: 'center' }}>
           {message.text}
