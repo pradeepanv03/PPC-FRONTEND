@@ -20,7 +20,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
  </div>
 
 
- <div style={{ position: "relative", width: "100%", height:'150px'}}>
+ <div style={{ position: "relative", width: "100%", height:'160px'}}>
             <img
                                         src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                                         alt="Property"
