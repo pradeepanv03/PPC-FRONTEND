@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { FaRulerCombined, FaBed, FaCalendarAlt, FaUserAlt, FaRupeeSign, FaArrowLeft } from "react-icons/fa";
-import { Container } from "react-bootstrap";
 import { Helmet } from "react-helmet";
 import axios from "axios";
-import { toast } from "react-toastify";
 import "./MyProperty.css";
 import { useNavigate } from "react-router-dom";
+import pic from '../../Assets/Default image_PP-01.png'; // Correct path
 
 const RemovedProperty = () => {
   const phoneNumber = localStorage.getItem("phoneNumber"); // Get phone number from localStorage
   const [removedUsers, setRemovedUsers] = useState([]); // Store deleted properties
+    const [message, setMessage] = useState("");
+      const [propertyUsers, setPropertyUsers] = useState([]);
+    
+  
+    useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => setMessage(""), 3000); // Auto-close after 3 seconds
+        return () => clearTimeout(timer); // Cleanup timer
+      }
+    }, [message]);
+    
 
   // Fetch removed properties when component loads
   useEffect(() => {
@@ -33,7 +43,7 @@ const RemovedProperty = () => {
     }
   };
 
-  // Undo delete property
+  
   const handleUndo = async (ppcId) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/undo-delete`, {
@@ -42,12 +52,12 @@ const RemovedProperty = () => {
       });
 
       if (response.status === 200) {
-        toast.success("Property restored successfully!");
-        setRemovedUsers((prev) => prev.filter((user) => user.ppcId !== ppcId)); // Remove from removed list
+        setMessage("Property status reverted successfully!");
+        setRemovedUsers((prev) => prev.filter((user) => user.ppcId !== ppcId));
+        setPropertyUsers((prev) => [...prev, { ...response.data.user }]);
       }
     } catch (error) {
-      toast.error("Error undoing property deletion.");
-      console.error("Undo Error:", error);
+      setMessage("Error undoing property status.");
     }
   };
 
@@ -71,6 +81,11 @@ const RemovedProperty = () => {
           <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
             <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
           </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>Removed Properties </h3> </div>
+
+          <div className="fw-bold">
+      {message && <div className="alert text-success text-bold">{message}</div>}
+      {/* Your existing component structure goes here */}
+    </div>
     
           <div className="row g-2 w-100">
 
@@ -78,7 +93,7 @@ const RemovedProperty = () => {
         removedUsers.map((user) => (
           <div
             key={user._id}
-            className="card mb-3 shadow p-1"
+            className="card mb-2 mt-3 shadow p-1"
             style={{ width: "100%", minWidth: "400px", background: "#F9F9F9" }}
           >
             <div className="row g-0">
@@ -86,12 +101,12 @@ const RemovedProperty = () => {
                 <div className="text-white py-1 px-2 text-center" style={{ width: "100%", background: "#2F747F" }}>
                   PUC- {user.ppcId}
                 </div>
-                <div className="img-container" style={{ width: "100%", height: "150px", overflow: "hidden" }}>
+                <div className="img-container" style={{ width: "100%", height: "160px", overflow: "hidden" }}>
                   <img
                     src={
                       user.photos && user.photos.length > 0
                         ? `http://localhost:5006/${user.photos[0]}`
-                        : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"
+                        : pic
                     }
                     alt="Property"
                     className="img-fluid"
