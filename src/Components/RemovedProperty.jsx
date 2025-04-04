@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import axios from "axios";
 import "./MyProperty.css";
 import { useNavigate } from "react-router-dom";
-import pic from '../../Assets/Default image_PP-01.png'; // Correct path
+import pic from '../Assets/Default image_PP-01.png'; // Correct path
 
 const RemovedProperty = () => {
   const phoneNumber = localStorage.getItem("phoneNumber"); // Get phone number from localStorage
