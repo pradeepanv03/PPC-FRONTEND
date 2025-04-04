@@ -120,7 +120,7 @@ const SidebarApp = () => {
       </div>
     </div>
     <div className="row g-2 mt-1"
-     style={{background:"#ffffff", overflowY: "scroll", scrollbarWidth: "none" , width:"300px", height: "500px", }}>
+     style={{background:"#ffffff", overflowY: "scroll", scrollbarWidth: "none" , width:"300px", height: "75vh", }}>
     <ul className="nav flex-column pb-5 w-100 ">
 
 
