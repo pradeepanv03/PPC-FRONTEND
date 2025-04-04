@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
@@ -183,41 +178,7 @@ const formattedCreatedAt = Date.now
 : "N/A";
 
 
-  // const handlePreview = () => { 
-  //   const requiredFields = [
-      
-  //     "propertyMode",
-  //     "propertyType",
-  //     "price",
-  //     "totalArea",
-  //     "areaUnit",
-  //     "salesType",
-  //     "postedBy"
-  //   ];
-  
-  //   const missingFields = requiredFields.filter(field => !formData[field]);
-  
-  //   if (missingFields.length > 0) {
-  //     alert(`Please fill in the following fields before previewing: ${missingFields.join(", ")}`);
-  //     return;
-  //   }
-  //   setStep("preview");
 
-  //   const isValid = requiredFields.every(field => formData[field]);
-  
-  //   if (!isValid) {
-  //     alert("Please fill in all required fields.");
-  //     return;
-  //   }
-  
-  //   setIsPreviewOpen(true); // Open the preview
-  
-  //   // Scroll to the preview section
-  //   setTimeout(() => {
-  //     previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  //   }, 100);
-  // };
- 
   const formRefs = {
     propertyMode: useRef(null),
     propertyType: useRef(null),
@@ -467,15 +428,7 @@ const formattedCreatedAt = Date.now
     setSelectedPhotoIndex(index);
   };
 
-  // const handleFieldChange = (e) => {
-  //   const { name, value } = e.target;
-  //   // setFormData({ ...formData, [name]: value });
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value, // This dynamically updates the correct field (phoneNumberCountryCode or alternatePhoneCountryCode)
-  //   }));
-    
-  // };
+
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -552,29 +505,7 @@ const formattedCreatedAt = Date.now
     return words.trim();
   };
   
-  // Usage in onChange function
-  // const handleFieldChange = (e) => {
-  //   const { name, value } = e.target;
-  
-  //   setFormData((prev) => {
-  //     let updatedValue = value;
-  
-  //     // Capitalize first letter if field is "description"
-  //     if (name === "description" && value.length > 0) {
-  //       updatedValue = value.charAt(0).toUpperCase() + value.slice(1);
-  //     }
-  
-  //     // Convert "price" to Indian number words
-  //     if (name === "price" && value !== "" && !isNaN(value)) {
-  //       setPriceInWords(convertToIndianRupees(value));
-  //     } else if (name === "price" && value === "") {
-  //       setPriceInWords("");
-  //     }
-  
-  //     return { ...prev, [name]: updatedValue };
-  //   });
-  // };
-  
+
   const handleShowMore =async (e) => {
     e.preventDefault();
 
@@ -2816,6 +2747,22 @@ const handleEdit = () => {
          <p>No media uploaded.</p>
        )}
 <div className="row">
+<p className="m-0" style={{
+      color: "#4F4B7E",
+      fontWeight: 'bold',
+      fontSize: "26px"
+    }}>
+      <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+  
+      <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+         Negotiation: {formData.negotiation || "N/A"}
+      </span>
+    </p>
+    {priceInWords && (
+          <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+            {priceInWords}
+          </p>
+        )}
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
 if (detail.heading) {

@@ -2732,7 +2732,22 @@ onClick={() => removePhoto(index)}>
   </div>
   </div>
 <div className="row w-100">
-
+<p className="m-0" style={{
+      color: "#4F4B7E",
+      fontWeight: 'bold',
+      fontSize: "26px"
+    }}>
+      <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+  
+      <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+         Negotiation: {formData.negotiation || "N/A"}
+      </span>
+    </p>
+    {priceInWords && (
+          <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+            {priceInWords}
+          </p>
+        )}
 
   
 {propertyDetailsList.map((detail, index) => {

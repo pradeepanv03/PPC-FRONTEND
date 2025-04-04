@@ -1,14 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
@@ -169,40 +160,6 @@ function AddProperty() {
       previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
-  // const handlePreview = () => { 
-  //   const requiredFields = [
-      
-  //     "propertyMode",
-  //     "propertyType",
-  //     "price",
-  //     "totalArea",
-  //     "areaUnit",
-  //     "salesType",
-  //     "postedBy"
-  //   ];
-  
-  //   const missingFields = requiredFields.filter(field => !formData[field]);
-  
-  //   if (missingFields.length > 0) {
-  //     alert(`Please fill in the following fields before previewing: ${missingFields.join(", ")}`);
-  //     return;
-  //   }
-  
-  //   setStep("preview");
-  //   const isValid = requiredFields.every(field => formData[field]);
-  
-  //   if (!isValid) {
-  //     alert("Please fill in all required fields.");
-  //     return;
-  //   }
-  
-  //   setIsPreviewOpen(true); // Open the preview
-  
-  //   // Scroll to the preview section
-  //   setTimeout(() => {
-  //     previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  //   }, 100);
-  // };
 
   const propertyDetailsList = [
     { heading: true, label: "Basic Property Info" }, // Heading 1
@@ -2659,6 +2616,22 @@ const handleEdit = () => {
          <p>No media uploaded.</p>
        )}
 <div className="row">
+<p className="m-0" style={{
+      color: "#4F4B7E",
+      fontWeight: 'bold',
+      fontSize: "26px"
+    }}>
+      <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+  
+      <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+         Negotiation: {formData.negotiation || "N/A"}
+      </span>
+    </p>
+    {priceInWords && (
+          <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+            {priceInWords}
+          </p>
+        )}
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
 if (detail.heading) {
