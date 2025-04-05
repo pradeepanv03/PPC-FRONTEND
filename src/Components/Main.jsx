@@ -172,7 +172,8 @@ const Main = () => {
            overflowY: "auto", 
            paddingTop: "144px", 
            paddingBottom: "90px",
-           scrollbarWidth:"none" 
+           scrollbarWidth:"none",
+           position: "relative"  
            }}>
       {renderContent()}
     </div>

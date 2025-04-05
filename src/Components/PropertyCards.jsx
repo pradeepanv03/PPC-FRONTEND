@@ -314,7 +314,7 @@ const PropertyCards = ({phoneNumber}) => {
             className="d-flex flex-column justify-content-center align-items-center "
             style={{
               height: '50px', width: '50px', background: '#2F747F', borderRadius: '50%',
-              position: 'absolute', right: window.innerWidth > 800 ? "35%" : "15%", bottom: '15%', zIndex: '1',
+              position: 'fixed', right: window.innerWidth > 800 ? "35%" : "15%", bottom: '15%', zIndex: '1',
             }}
             onClick={() => setIsFilterPopupOpen(true)}
           >
@@ -443,8 +443,8 @@ const PropertyCards = ({phoneNumber}) => {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '400px',
-      maxHeight: '60vh',
+      width: '90%', // Responsive width
+      maxWidth: '400px', // Prevents stretching on larger screens      maxHeight: '60vh',
       overflowY: 'scroll',
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
@@ -617,8 +617,8 @@ const PropertyCards = ({phoneNumber}) => {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '400px',
-      maxHeight: '60vh',
+      width: '90%', // Responsive width
+      maxWidth: '400px', // Prevents stretching on larger screens      maxHeight: '60vh',
       overflowY: 'scroll',
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',
