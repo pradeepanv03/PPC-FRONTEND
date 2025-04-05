@@ -1,49 +1,138 @@
 
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { Button } from "react-bootstrap";
+import {  useLocation, useNavigate } from "react-router-dom";
+import { RiLayoutLine } from 'react-icons/ri';
+import { TbArrowLeftRight } from 'react-icons/tb';
+import {FaBuilding, FaMoneyBillWave,  FaBath, FaChartArea, FaPhone ,FaEdit,FaRoad,FaDoorClosed,FaMapPin, FaHome, FaUserAlt, FaEnvelope,  FaRupeeSign , FaFileVideo , FaToilet,FaCar,FaBed,  FaCity , FaTimes} from 'react-icons/fa';
+import {  FaRegAddressCard } from 'react-icons/fa6';
+import { MdLocationOn, MdOutlineMeetingRoom, MdOutlineOtherHouses, MdSchedule , MdStraighten , MdApproval, MdLocationCity , MdAddPhotoAlternate, MdKeyboardDoubleArrowDown} from "react-icons/md";
+import { BsBank, BsBuildingsFill, BsFillHouseCheckFill , BsTextareaT} from "react-icons/bs";
+import { GiKitchenScale, GiMoneyStack , GiResize , GiGears} from "react-icons/gi";
+import { HiUserGroup } from "react-icons/hi";
+import { BiBuildingHouse , BiMap, BiWorld} from "react-icons/bi";
+import {   FaFileAlt, FaGlobeAmericas, FaMapMarkerAlt, FaMapSigns } from "react-icons/fa";
+import {MdElevator ,MdOutlineChair ,MdPhone, MdOutlineAccessTime, MdTimer, MdHomeWork, MdHouseSiding, MdOutlineKitchen, MdEmail, } from "react-icons/md";
+import {  BsBarChart, BsGraphUp } from "react-icons/bs";
+import { BiBuilding, BiStreetView } from "react-icons/bi";
+import { GiStairs, GiForkKnifeSpoon, GiWindow } from "react-icons/gi";
+import { AiOutlineEye, AiOutlineColumnWidth, AiOutlineColumnHeight } from "react-icons/ai";
+import { BiBed, BiBath, BiCar, BiCalendar, BiUser, BiCube } from "react-icons/bi";
+import PricingPlans from "./PricingPlans";
+import "swiper/css";
+import "swiper/css/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import { IoCloseCircle } from "react-icons/io5";
+import moment from "moment";
+import { format } from "date-fns";
+import { Spinner } from "react-bootstrap"; // Using Bootstrap for loading animation
 
 
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Button, Form } from 'react-bootstrap';
-import axios from 'axios';
-import { FaFileVideo } from 'react-icons/fa'; // Icon for video upload
+function AddProps({ phoneNumber }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Store selected files
 
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-const AddProp = () => {
+  const previewRef = useRef(null);
+
+  const fileInputRef = useRef(null); // Ref for input field
+
+  useEffect(() => {
+    // This will trigger the animation when the component is loaded
+    const timer = setTimeout(() => {
+      setIsVisible(true); // Set to true after a short delay to trigger animation
+    }, 100); // Delay before animation starts
+
+    // Clean up the timeout on unmount
+    return () => clearTimeout(timer);
+  }, []);
+  const [ppcId, setPpcId] = useState(null);
+  // const [countryCode, setCountryCode] = useState(localStorage.getItem("countryCode"));
+  const [priceInWords, setPriceInWords] = useState("");
   const location = useLocation();
-  const { ppcId, phoneNumber } = location.state || {};
+    const [currentStep, setCurrentStep] = useState(1);
+    const [showPlans, setshowPlans] = useState(false);
 
-  const getStoredData = () => {
-    const storedData = localStorage.getItem('propertyDetails');
-    return storedData ? JSON.parse(storedData) : {
-      propertyMode: '',
-      propertyType: '',
-      price: '',
-      propertyAge: '',
-      bankLoan: '',
-      negotiation: '',
-      length: '',
-      breadth: '',
-      totalArea: '',
-      ownership: '',
-      bedrooms: '',
-      kitchen: '',
-      kitchenType: '',
-      balconies: '',
-      floorNo: '',
-      areaUnit: '',
-      propertyApproved: '',
-      postedBy: '',
-      facing: '',
-      salesMode: '',
-      salesType: '',
-      description: '',
-      furnished: '',
-      lift: '',
-      attachedBathrooms: '',
-      western: '',
-      numberOfFloors: '',
-      carParking: '',
-      rentalPropertyAddress: '',
+    const [message, setMessage] = useState({ text: "", type: "" });
+
+
+     // Auto-clear message after 3 seconds
+      useEffect(() => {
+        if (message.text) {
+          const timer = setTimeout(() => {
+            setMessage({ text: "", type: "" });
+          }, 3000);
+          return () => clearTimeout(timer);
+        }
+      }, [message]);
+    
+  
+
+  useEffect(() => {
+    if (!phoneNumber) {
+      setMessage({ text: "Missing phone number.", type: "error" });
+      return;
+    }
+  
+    const handleAddProperty = async () => {
+      try {
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/store-data`, {
+          phoneNumber: phoneNumber,
+        });
+  
+        if (response.status === 201) {
+          setPpcId(response.data.ppcId); // Store the ppcId in state
+          setMessage({ text: `User added successfully! PPC-ID: ${response.data.ppcId}`, type: "success" });
+        }
+      } catch (error) {
+        console.error("API Error:", error);
+        setMessage({ text: error.response?.data?.message || "Error adding user.", type: "error" });
+      }
+    };
+  
+    handleAddProperty();
+  }, [phoneNumber]); // Runs when phoneNumber changes
+  
+  
+
+    const handleCloseAddForm = () => {
+      setshowPlans(false); // Close add property form
+    };
+
+  const [formData, setFormData] = useState({
+    propertyMode: '',
+    propertyType: '',
+    price: '',
+    propertyAge: '',
+    bankLoan: '',
+    negotiation: '',
+    length: '',
+    breadth: '',
+    totalArea: '',
+    ownership: '',
+    bedrooms: '',
+    kitchen: '',
+    kitchenType: '',
+    balconies: '',
+    floorNo: '',
+    areaUnit: '',
+    propertyApproved: '',
+    postedBy: '',
+    facing: '',
+    salesMode: '',
+    salesType: '',
+    description: '',
+    furnished: '',
+    lift: '',
+    attachedBathrooms: '',
+    western: '',
+    numberOfFloors: '',
+    carParking: '',
+    rentalPropertyAddress: '',
     country: '',
     state: '',
     city: '',
@@ -52,257 +141,846 @@ const AddProp = () => {
     streetName: '',
     doorNumber: '',
     nagar: '',
-      ownerName: '',
-      email: '',
-      bestTimeToCall: '',
-    };
-  };
-
-
-
-  const [propertyDetails, setPropertyDetails] = useState(getStoredData);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    const updatedDetails = { ...propertyDetails, [name]: value };
-    setPropertyDetails(updatedDetails);
-
-    // Save updated data to localStorage
-    localStorage.setItem('propertyDetails', JSON.stringify(updatedDetails));
-  };
-
-
-  const [isPreview, setIsPreview] = useState(false);
-
-  const handlePreview = () => {
-    setIsPreview(!isPreview);
-  };
-
+    ownerName: '',
+    email: '',
+    countryCode:"+91",
+    phoneNumber: "",
+  phoneNumberCountryCode: "",
+  alternatePhone: "",
+  alternatePhoneCountryCode: "",
+    bestTimeToCall: '',
+  });
 
   const [photos, setPhotos] = useState([]);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [video, setVideo] = useState(null);
+  const [isPreview, setIsPreview] = useState(true);
+  const [step, setStep] = useState("form"); // "form" -> "preview" -> "submitted"
+
+  const navigate = useNavigate();
+
+  
+  const formattedDate = formData.createdAt 
+  ? new Date(formData.createdAt).toLocaleDateString("en-GB", { 
+      day: "2-digit", 
+      month: "2-digit", 
+      year: "numeric", 
+      hour: "2-digit", 
+      minute: "2-digit", 
+      second: "2-digit" 
+    }) 
+  : "N/A";
+
+   
+const formattedCreatedAt = Date.now
+? moment(formData.createdAt).format("DD-MM-YYYY") 
+: "N/A";
 
 
 
+  const formRefs = {
+    propertyMode: useRef(null),
+    propertyType: useRef(null),
+    price: useRef(null),
+    totalArea: useRef(null),
+    areaUnit: useRef(null),
+    salesType: useRef(null),
+    postedBy: useRef(null),
+  };
+ 
+  const handlePreview = () => {
+    const requiredFields = Object.keys(formRefs);
+  
+    const missingFields = requiredFields.filter(field => !formData[field]);
+  
+    if (missingFields.length > 0) {
+      alert(`Please fill in the following fields before previewing: ${missingFields.join(", ")}`);
+  
+      // Focus and scroll to the first missing field
+      const firstMissingField = missingFields[0];
+      const fieldRef = formRefs[firstMissingField];
+  
+      if (fieldRef?.current) {
+        fieldRef.current.focus(); // Set focus first
+        
+        setTimeout(() => {
+          fieldRef.current.scrollIntoView({ behavior: "smooth", block: "center" }); // Scroll smoothly
+        }, 100); // Delay slightly to ensure focus happens first
+      }
+  
+      return;
+    }
+  
+    setStep("preview");
+    setIsPreviewOpen(true);
+  
+    // Scroll to the preview section
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+  const propertyDetailsList = [
+    { heading: true, label: "Basic Property Info" }, // Heading 1
+    { icon: <MdHomeWork />, label: "Property Mode", value:  formData.propertyMode},
+    { icon: <MdHouseSiding />, label: "Property Type", value: formData.propertyType },
+    // { icon: <MdOutlineCurrencyRupee />, label: "Price", value: formData.price },
+    // { icon: <FaBalanceScale />, label: "Negotiation", value: formData.negotiation },
+    { icon: <AiOutlineColumnWidth />, label: "Length", value: formData.length },
+    { icon: <AiOutlineColumnHeight />, label: "Breadth", value: formData.breadth  },
+    // { icon: <RiLayoutLine />, label: "Total Area", value: formData.totalArea},
+    {
+      icon: <RiLayoutLine />,
+      label: "Total Area",
+      value: `${formData.totalArea} ${formData.areaUnit}`, // Combined value
+    },
+    // { icon: <BiRuler />, label: "Area Unit", value: formData.areaUnit },
+    { icon: <FaUserAlt />, label: "Ownership", value: formData.ownership },
+    { icon: <MdApproval />, label: "Property Approved", value: formData.propertyApproved },
+    { icon: <MdTimer />, label: "Property Age", value: formData.propertyAge },
+    { icon: <BsBank />, label: "Bank Loan", value: formData.bankLoan },
 
 
+    { heading: true, label: "Property Features" }, // Heading 1
+    { icon: <BiBed />, label: "Bedrooms", value: formData.bedrooms },
 
-  // Handle photo uploads
-  const handlePhotoUpload = (e) => {
+    { icon: <GiStairs />, label: "Floor No", value:formData.floorNo },
+    { icon: <GiForkKnifeSpoon />, label: "Kitchen", value: formData.kitchen},
+    { icon: <MdOutlineKitchen />, label: "Kitchen Type", value: formData.kitchenType },
+    { icon: <GiWindow />, label: "Balconies", value: formData.balconies},
+    { icon: <BiCube />, label: "Floors", value: formData.numberOfFloors },
+{ label: "western", value: formData.western, icon: <BiBath /> },
+{ label: "attached", value: formData.attachedBathrooms, icon: <BiBath /> },
+
+    { icon: <BiCar />, label: "Car Park", value: formData.carParking },
+    { icon: <MdElevator />, label: "Lift", value: formData.lift },
+    { heading: true, label: "Other details" }, // Heading 2
+
+    { icon: <MdOutlineChair />, label: "Furnished", value: formData.furnished },
+    { icon: <TbArrowLeftRight />, label: "Facing", value: formData.facing },
+
+    { icon: <BsGraphUp />, label: "Sale Mode", value: formData.salesMode },
+    { icon: <BsBarChart />, label: "Sales Type", value: formData.salesType },
+    { icon: <BiUser />, label: "Posted By", value: formData.postedBy },
+    // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
+    { icon: <BiCalendar />, label: "Posted On", value:formattedCreatedAt },
+    { heading: true, label: "Description" }, // Heading 3
+    { icon: <FaFileAlt />, label: "Description" , value: formData.description },
+  
+    { heading: true, label: "Property Location Info" }, // Heading 4
+  
+    // { icon: <BiMap />, label: "Location", value: "New York, USA" },
+    { icon: <FaGlobeAmericas />, label: "Country", value: formData.country },
+    { icon: <BiBuilding />, label: "State", value: formData.state },
+    { icon: <MdLocationCity />, label: "City", value: formData.city },
+    { icon: <FaMapMarkerAlt />, label: "District", value:  formData.district},
+    { icon: <FaMapSigns />, label: "Nagar", value: formData.nagar },
+    { icon: <FaDoorClosed />, label: "Door Number", value: formData.doorNumber },
+
+    { heading: true, label: "Contact Info" }, // Heading 5
+   
+    { icon: <FaUserAlt />, label: "Owner Name", value: formData.ownerName },
+    { icon: <MdPhone  />, label: "Phone Number", value: phoneNumber },
+    { icon: <MdPhone  />, label: "alternate Phone", value: formData.alternatePhone },
+
+    { icon: <MdEmail />, label: "Email", value: formData.email },
+    { icon: <MdOutlineAccessTime />, label: "Best Time To Call", value: formData.bestTimeToCall },
+ 
+  ];
+  const [dropdownState, setDropdownState] = useState({
+    activeDropdown: null,
+    filterText: "",
+  });
+
+  // Toggle dropdown visibility
+  const toggleDropdown = (field) => {
+    setDropdownState((prevState) => ({
+      activeDropdown: prevState.activeDropdown === field ? null : field,
+      filterText: "",
+    }));
+  };
+
+  // Handle dropdown selection
+  const handleDropdownSelect = (field, value) => {
+    setFormData((prevState) => ({ ...prevState, [field]: value }));
+    setDropdownState({ activeDropdown: null, filterText: "" });
+  };
+
+  // Handle filter input change for dropdown
+  const handleFilterChange = (e) => {
+    setDropdownState((prevState) => ({ ...prevState, filterText: e.target.value }));
+  };
+
+ 
+
+
+  const [countryCodes, setCountryCodes] = useState([
+    { code: '+1', country: 'USA/Canada' },
+    { code: '+44', country: 'UK' },
+    { code: '+91', country: 'India' },
+    { code: '+61', country: 'Australia' },
+    { code: '+81', country: 'Japan' },
+    { code: '+49', country: 'Germany' },
+    { code: '+33', country: 'France' },
+    { code: '+34', country: 'Spain' },
+    { code: '+55', country: 'Brazil' },
+    { code: '+52', country: 'Mexico' },
+    { code: '+86', country: 'China' },
+    { code: '+39', country: 'Italy' },
+    { code: '+7', country: 'Russia/Kazakhstan' },
+    // ... other countries
+  ]);
+  const [alternateCountryCodes, setAlternateCountryCodes] = useState([
+    { code: '+1', country: 'USA/Canada' },
+    { code: '+44', country: 'UK' },
+    { code: '+91', country: 'India' },
+    { code: '+61', country: 'Australia' },
+    { code: '+81', country: 'Japan' },
+    { code: '+49', country: 'Germany' },
+    { code: '+33', country: 'France' },
+    { code: '+34', country: 'Spain' },
+    { code: '+55', country: 'Brazil' },
+    { code: '+52', country: 'Mexico' },
+    { code: '+86', country: 'China' },
+    { code: '+39', country: 'Italy' },
+    { code: '+7', country: 'Russia/Kazakhstan' },
+  ]);
+  
+  
+  const [dataList, setDataList] = useState({});
+
+  const fetchDropdownData = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch`);
+      const groupedData = response.data.data.reduce((acc, item) => {
+        if (!acc[item.field]) acc[item.field] = [];
+        acc[item.field].push(item.value);
+        return acc;
+      }, {});
+      setDataList(groupedData);
+    } catch (error) {
+      console.error("Error fetching dropdown data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDropdownData();
+  }, []);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      fileInputRef.current.click();
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files);
-    const maxSize = 10 * 1024 * 1024; // 10MB file size limit
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (!files.length) return;
 
-    // Check if the file size is within the limit
+    setLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulated upload delay
+
+    setLoading(false);
+    setSelectedFiles(files); // Update selected files
+
     for (let file of files) {
       if (file.size > maxSize) {
-        alert('File size exceeds the 10MB limit');
+        alert("File size exceeds the 10MB limit");
         return;
       }
     }
 
-    // Check if the number of photos exceeds the limit (5 photos)
-    if (photos.length + files.length <= 5) {
+    if (photos.length + files.length <= 15) {
       setPhotos([...photos, ...files]);
+      setSelectedPhotoIndex(0);
     } else {
-      alert('Maximum 5 photos can be uploaded.');
+      alert("Maximum 15 photos can be uploaded.");
     }
   };
 
-  // Remove a photo from the list
   const removePhoto = (index) => {
     setPhotos(photos.filter((_, i) => i !== index));
+    if (index === selectedPhotoIndex) {
+      setSelectedPhotoIndex(0);
+    }
   };
 
-  // Handle video file change with size validation
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
-    const maxSize = 50 * 1024 * 1024; // 50MB file size limit
-
+    const maxSize = 50 * 1024 * 1024; // 50MB
     if (file.size > maxSize) {
       alert('File size exceeds the 50MB limit');
       return;
     }
-
     setVideo(file);
   };
 
-  // Remove the selected video
-const removeVideo = () => {
-  setVideo(null);
-};
+  const removeVideo = () => {
+    setVideo(null);
+  };
 
-  // Submit the form data (photos and video) to the backend
-  const handleSubmit = async (e) => {
+  const handlePhotoSelect = (index) => {
+    setSelectedPhotoIndex(index);
+  };
+
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e.target;
+  
+    setFormData((prev) => {
+      let updatedValue = value;
+  
+      // Capitalize first letter if field is "description"
+      if (name === "description" && value.length > 0) {
+        updatedValue = value.charAt(0).toUpperCase() + value.slice(1);
+      }
+  
+      // Convert "price" to Indian number words
+      if (name === "price" && value !== "" && !isNaN(value)) {
+        setPriceInWords(convertToIndianRupees(value));
+      } else if (name === "price" && value === "") {
+        setPriceInWords("");
+      }
+  
+      return { ...prev, [name]: updatedValue };
+    });
+  };
+    const convertToIndianRupees = (num) => {
+    if (!num) return "";
+  
+    const units = [
+      "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+      "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+      "Seventeen", "Eighteen", "Nineteen",
+    ];
+    const tens = [
+      "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy",
+      "Eighty", "Ninety",
+    ];
+    
+    const scales = ["", "Thousand", "Lakh", "Crore"];
+    
+    let number = parseInt(num, 10);
+    let words = "";
+  
+    if (number === 0) return "Zero";
+  
+    // Handle Crores
+    if (number >= 10000000) {
+      words += convertToIndianRupees(Math.floor(number / 10000000)) + " Crore ";
+      number %= 10000000;
+    }
+    // Handle Lakhs
+    if (number >= 100000) {
+      words += convertToIndianRupees(Math.floor(number / 100000)) + " Lakh ";
+      number %= 100000;
+    }
+    // Handle Thousands
+    if (number >= 1000) {
+      words += convertToIndianRupees(Math.floor(number / 1000)) + " Thousand ";
+      number %= 1000;
+    }
+    // Handle Hundreds
+    if (number >= 100) {
+      words += units[Math.floor(number / 100)] + " Hundred ";
+      number %= 100;
+    }
+    // Handle last part (0-99)
+    if (number > 0) {
+      if (words !== "") words += "and ";
+      if (number < 20) {
+        words += units[number];
+      } else {
+        words += tens[Math.floor(number / 10)];
+        if (number % 10 !== 0) words += " " + units[number % 10];
+      }
+    }
+  
+    return words.trim();
+  };
+  
+  
+  const handleShowMore =async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
 
-    // Add video and photos to FormData
-    if (video) {
-      formData.append('video', video);
+    // Ensure `ppcId` is available
+    if (!ppcId) {
+      alert("PPC-ID is required. Please refresh or try again.");
+      return;
     }
-    photos.forEach((photo) => formData.append('photos', photo));
-
-    // Add property details to FormData
-    formData.append('ppcId', ppcId);
-    formData.append('phoneNumber', phoneNumber);
-    formData.append('propertyMode', propertyDetails.propertyMode);
-    formData.append('propertyType', propertyDetails.propertyType);
-    formData.append('price', propertyDetails.price);
-        formData.append('propertyAge', propertyDetails.propertyAge);
-        formData.append('bankLoan', propertyDetails.bankLoan);
-        formData.append('negotiation', propertyDetails.negotiation);
-        formData.append('length', propertyDetails.length);
-        formData.append('breadth', propertyDetails.breadth);
-        formData.append('totalArea', propertyDetails.totalArea);
-        formData.append('ownership', propertyDetails.ownership);
-        formData.append('bedrooms', propertyDetails.bedrooms);
-        formData.append('kitchen', propertyDetails.kitchen);
-        formData.append('kitchenType', propertyDetails.kitchenType);
-        formData.append('balconies', propertyDetails.balconies);
-        formData.append('floorNo', propertyDetails.floorNo);
-        formData.append('areaUnit', propertyDetails.areaUnit);
-        formData.append('propertyApproved', propertyDetails.propertyApproved);
-        formData.append('postedBy', propertyDetails.postedBy);
-        formData.append('facing', propertyDetails.facing);
-        formData.append('salesMode', propertyDetails.salesMode);
-        formData.append('salesType', propertyDetails.salesType);
-        formData.append('description', propertyDetails.description);
-        formData.append('furnished', propertyDetails.furnished);
-        formData.append('lift', propertyDetails.lift);
-        formData.append('attachedBathrooms', propertyDetails.attachedBathrooms);
-        formData.append('western', propertyDetails.western);
-        formData.append('numberOfFloors', propertyDetails.numberOfFloors);
-        formData.append('carParking', propertyDetails.carParking);
-        formData.append('rentalPropertyAddress', propertyDetails.rentalPropertyAddress);
-        formData.append('country', propertyDetails.country);
-        formData.append('state', propertyDetails.state);
-        formData.append('city', propertyDetails.city);
-        formData.append('district', propertyDetails.district);
-        formData.append('area', propertyDetails.area);
-        formData.append('streetName', propertyDetails.streetName);
-        formData.append('doorNumber', propertyDetails.doorNumber);
-        formData.append('nagar', propertyDetails.nagar);
-        formData.append('ownerName', propertyDetails.ownerName);
-        formData.append('email', propertyDetails.email);
-        formData.append('phoneNumber', propertyDetails.phoneNumber);
-        formData.append('alternatePhone', propertyDetails.alternatePhone);
-        formData.append('bestTimeToCall', propertyDetails.bestTimeToCall);
-
+  
+    // Create FormData instance to send photos and video
+    const formDataToSend = new FormData();
+  
+    // Append PPC-ID first
+    formDataToSend.append("ppcId", ppcId);
+  
+    // Append form fields
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+  
+    // Append photos
+    photos.forEach((photo) => {
+      formDataToSend.append("photos", photo);
+    });
+  
+    // Append video if available
+    if (video) {
+      formDataToSend.append("video", video);
+    }
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/update-property`, formData, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/update-property`, formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Necessary for file uploads
+          'Content-Type': 'multipart/form-data', 
         },
       });
 
       if (response.status === 200) {
-        alert('Property details updated successfully!');
+        // alert('Property details updated successfully!');
       }
     } catch (error) {
       console.error('Error updating property details:', error);
-      alert('Failed to update property details. Please try again.');
+      // alert('Failed to update property details. Please try again.');
     }
+    setCurrentStep(currentStep + 1);
   };
 
 
 
-  return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>Add Property Details</h1>
-      <p>PPC-ID: {ppcId}</p>
-      <p>Phone Number: {phoneNumber}</p>
-     
-      {!isPreview ? (
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStep("submitted"); // Show PricingPlans
+  
+    // Ensure `ppcId` is available
+    if (!ppcId) {
+      setMessage({ text: "PPC-ID is required. Please refresh or try again.", type: "error" });
+      return;
+    }
+  
+    // Create FormData instance to send photos and video
+    const formDataToSend = new FormData();
+  
+    // Append PPC-ID first
+    formDataToSend.append("ppcId", ppcId);
+  
+    // Append form fields
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+  
+    // Append photos
+    photos.forEach((photo) => {
+      formDataToSend.append("photos", photo);
+    });
+  
+    // Append video if available
+    if (video) {
+      formDataToSend.append("video", video);
+    }
+  
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/update-property`,
+        formDataToSend,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+  
+      setMessage({ text: "Property Added successfully!", type: "success" });
+  
+      setTimeout(() => {
+        setMessage({ text: "", type: "" }); // Clear message after 5 seconds
+      }, 5000);
+  
+    } catch (error) {
+      setMessage({ 
+        text: error.response?.data?.message || "Error saving property data.", 
+        type: "error" 
+      });
+    }
+  };
+  
 
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="propertyMode">
-          <Form.Label>Property Mode</Form.Label>
-          <Form.Control
-            as="select"
-            name="propertyMode"
-            value={propertyDetails.propertyMode}
-            onChange={handleInputChange}
-            required
+const fieldIcons = {
+  // Contact Details
+  phoneNumber: <FaPhone color="#2F747F" />,
+  alternatePhone: <FaPhone color="#2F747F" />,
+  email: <FaEnvelope color="#2F747F" />,
+  bestTimeToCall: <MdSchedule color="#2F747F" />,
+  
+  // Property Location
+  rentalPropertyAddress: <MdLocationCity color="#2F747F" />,
+  country: <BiWorld color="#2F747F" />,
+  state: <MdLocationCity color="#2F747F" />,
+  city: <FaCity color="#2F747F" />,
+  district: <FaRegAddressCard color="#2F747F" />,
+  area: <MdLocationOn color="#2F747F" />,
+  streetName: <RiLayoutLine color="#2F747F" />,
+  doorNumber: <BiBuildingHouse color="#2F747F" />,
+  nagar: <FaRegAddressCard color="#2F747F" />,
+
+  // Ownership & Posting Info
+  ownerName: <FaUserAlt color="#2F747F" />,
+  postedBy: <FaUserAlt color="#2F747F" />,
+  ownership: <HiUserGroup color="#2F747F" />,
+
+  // Property Details
+  propertyMode: <MdApproval color="#2F747F" />,
+  propertyType: <MdOutlineOtherHouses color="#2F747F" />,
+  propertyApproved: <BsFillHouseCheckFill color="#2F747F" />,
+  propertyAge: <MdSchedule color="#2F747F" />,
+  description: <BsTextareaT color="#2F747F" />,
+
+  // Pricing & Financials
+  price: <FaRupeeSign color="#2F747F" />,
+  bankLoan: <BsBank color="#2F747F" />,
+  negotiation: <GiMoneyStack color="#2F747F" />,
+
+  // Measurements
+  length: <MdStraighten color="#2F747F" />,
+  breadth: <MdStraighten color="#2F747F" />,
+  totalArea: <GiResize color="#2F747F" />,
+  areaUnit: <FaChartArea color="#2F747F" />,
+
+  // Room & Floor Details
+  bedrooms: <FaBed color="#2F747F" />,
+  kitchen: <GiKitchenScale color="#2F747F" />,
+  kitchenType: <GiKitchenScale color="#2F747F" />,
+  balconies: <MdOutlineMeetingRoom color="#2F747F" />,
+  floorNo: <BsBuildingsFill color="#2F747F" />,
+  numberOfFloors: <BsBuildingsFill color="#2F747F" />,
+  attachedBathrooms: <FaBath color="#2F747F" />,
+  western: <FaToilet  color="#2F747F" />,
+
+  // Features & Amenities
+  facing: <TbArrowLeftRight color="#2F747F" />,
+  salesMode: <GiGears color="#2F747F" />,
+  salesType: <MdOutlineOtherHouses color="#2F747F" />,
+  furnished: <FaHome color="#2F747F" />,
+  lift: <BsBuildingsFill color="#2F747F" />,
+  carParking: <FaCar color="#2F747F" />,
+};
+const fieldLabels = {
+  propertyMode: "Property Mode",
+  propertyType: "Property Type",
+  price: "Price",
+  propertyAge: "Property Age",
+  bankLoan: "Bank Loan",
+  negotiation: "Negotiation",
+  length: "Length",
+  breadth: "Breadth",
+  totalArea: "Total Area",
+  ownership: "Ownership",
+  bedrooms: "Bedrooms",
+  kitchen: "Kitchen",
+  kitchenType: "Kitchen Type",
+  balconies: "Balconies",
+  floorNo: "Floor No.",
+  areaUnit: "Area Unit",
+  propertyApproved: "Property Approved",
+  postedBy: "Posted By",
+  facing: "Facing",
+  salesMode: "Sales Mode",
+  salesType: "Sales Type",
+  description: "Description",
+  furnished: "Furnished",
+  lift: "Lift",
+  attachedBathrooms: "Attached Bathrooms",
+  western: "Western Toilet",
+  numberOfFloors: "Number of Floors",
+  carParking: "Car Parking",
+  rentalPropertyAddress: "Property Address",
+  country: "Country",
+  state: "State",
+  city: "City",
+  district: "District",
+  area: "Area",
+  streetName: "Street Name",
+  doorNumber: "Door Number",
+  nagar: "Nagar",
+  ownerName: "Owner Name",
+  email: "Email",
+  phoneNumber: "Phone Number",
+  phoneNumberCountryCode: "Phone Country Code",
+  alternatePhone: "Alternate Phone",
+  alternatePhoneCountryCode: "Alternate Phone Country Code",
+  bestTimeToCall: "Best Time to Call",
+};
+
+    
+    const renderDropdown = (field) => {
+      const options = dataList[field] || [];
+      const filteredOptions = options.filter((option) =>
+        option.toLowerCase().includes(dropdownState.filterText.toLowerCase())
+      );
+  
+      return (
+        dropdownState.activeDropdown === field && (
+          <div
+            className="dropdown-popup"
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#fff',
+              width: '100%',
+              maxWidth: '400px',
+              padding: '10px',
+              zIndex: 10,
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              borderRadius: '8px',
+              overflowY: 'auto',
+              maxHeight: '50vh',
+              animation: 'popupOpen 0.3s ease-in-out',
+            }}
           >
-            <option value="">Select Mode</option>
-            <option value="Residential">Residential</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Agricultural">Agricultural</option>
-            <option value="Rent">Rent</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="propertyType">
-  <Form.Label>Property Type</Form.Label>
-  <Form.Control
-    as="select" // Use "as" prop to render a dropdown
-    name="propertyType"
-    value={propertyDetails.propertyType}
-    onChange={handleInputChange}
-  >
-    <option value="">Select Property Type</option>
-    {/* Residential Property Types */}
-    <optgroup label="Residential Property Types">
-      <option value="Flat/ Apartment">Flat/ Apartment</option>
-      <option value="Residential House">Residential House</option>
-      <option value="Villa">Villa</option>
-      <option value="Builder Floor Apartment">Builder Floor Apartment</option>
-      <option value="Penthouse">Penthouse</option>
-      <option value="Studio Apartment">Studio Apartment</option>
-      <option value="Service Apartment">Service Apartment</option>
-    </optgroup>
-
-    {/* Commercial Property Types */}
-    <optgroup label="Commercial Property Types">
-      <option value="Commercial Office Space">Commercial Office Space</option>
-      <option value="Office in IT Park/ SEZ">Office in IT Park/ SEZ</option>
-      <option value="Commercial Shop">Commercial Shop</option>
-      <option value="Commercial Showroom">Commercial Showroom</option>
-      <option value="Commercial Land">Commercial Land</option>
-      <option value="Warehouse/ Godown">Warehouse/ Godown</option>
-      <option value="Industrial Land">Industrial Land</option>
-      <option value="Industrial Building">Industrial Building</option>
-      <option value="Industrial Shed">Industrial Shed</option>
-    </optgroup>
-
-    {/* Agricultural Property Types */}
-    <optgroup label="Agricultural Property Types">
-      <option value="Agricultural Land">Agricultural Land</option>
-      <option value="Farm House">Farm House</option>
-    </optgroup>
-  </Form.Control>
-</Form.Group>
-
-
-        {/* Photo Upload Section */}
-        <div className="text-start mb-3">
-          <label htmlFor="photo-upload" className="btn rounded-0 photoupload" style={{ background: '#73C2FB', color: '#ffffff', fontWeight: 'bold' }}>
-            <i className="bi bi-image me-2"></i> Upload Photos
-          </label>
-          <input
-            id="photo-upload"
-            type="file"
-            multiple
-            accept="image/*"
-            className="form-control d-none"
-            onChange={handlePhotoUpload}
-          />
+                <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "16px",
+            marginBottom: "10px",
+            textAlign: "start",
+            color: "#019988",
+          }}
+        >
+           {fieldLabels[field] || "Property Field"}
         </div>
-
-        {/* Display selected photos */}
-        <div className="addpropertyphoto mb-3 p-3" style={{ display: 'grid', gap: '10px', gridTemplateColumns: `repeat(${window.innerWidth > 1200 ? 5 : window.innerWidth > 992 ? 3 : window.innerWidth > 768 ? 2 : window.innerWidth > 576 ? 2 : 1}, 1fr)` }}>
-          {photos.map((photo, index) => (
-            <div key={index} style={{ textAlign: 'center' }}>
-              <img src={URL.createObjectURL(photo)} alt="Uploaded" style={{ width: '80px', height: '80px', objectFit: 'cover' }} />
-              <p style={{ color: 'red', cursor: 'pointer' }} onClick={() => removePhoto(index)}>Remove</p>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Filter options..."
+                value={dropdownState.filterText}
+                onChange={handleFilterChange}
+                style={{
+                  width: '80%',
+                  padding: '5px',
+                  marginBottom: '10px',
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => toggleDropdown(field)}
+                style={{
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'none',
+                }}
+              >
+                <FaTimes size={18} color="red" />
+              </button>
             </div>
-          ))}
-        </div>
+            <ul
+              style={{
+                listStyleType: 'none',
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              {filteredOptions.map((option, index) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      [field]: option,
+                    }));
+                    toggleDropdown(field);
+                  }}
+                  style={{
+                    padding: '5px',
+                    cursor: 'pointer',
+                    backgroundColor: '#f9f9f9',
+                    marginBottom: '5px',
+                  }}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      );
+    };
 
 
+
+const fields = [
+  { name: "propertyMode", type: "select" },
+  { name: "propertyType", type: "select" },
+  { name: "price", type: "input" },
+  { name: "propertyAge", type: "select" },
+  { name: "bankLoan", type: "select" },
+  { name: "negotiation", type: "select" },
+  { name: "length", type: "input" },
+  { name: "breadth", type: "input" },
+  { name: "totalArea", type: "input" },
+  { name: "ownership", type: "select" },
+  { name: "bedrooms", type: "select" },
+  { name: "kitchen", type: "select" },
+  { name: "kitchenType", type: "select" },
+  { name: "balconies", type: "select" },
+  { name: "floorNo", type: "select" },
+  { name: "areaUnit", type: "select" },
+  { name: "propertyApproved", type: "select" },
+  { name: "postedBy", type: "select" },
+  { name: "facing", type: "select" },
+  { name: "salesMode", type: "select" },
+  { name: "salesType", type: "select" },
+  { name: "description", type: "input" },
+  { name: "furnished", type: "select" },
+  { name: "lift", type: "select" },
+  { name: "attachedBathrooms", type: "select" },
+  { name: "western", type: "select" },
+  { name: "numberOfFloors", type: "select" },
+  { name: "carParking", type: "select" },
+  { name: "rentalPropertyAddress", type: "input" },
+  { name: "country", type: "input" },
+  { name: "state", type: "input" },
+  { name: "city", type: "input" },
+  { name: "district", type: "input" },
+  { name: "area", type: "input" },
+  { name: "streetName", type: "input" },
+  { name: "doorNumber", type: "input" },
+  { name: "nagar", type: "input" },
+  { name: "ownerName", type: "input" },
+  { name: "email", type: "input" },
+  { name: "phoneNumber", type: "input" },
+  { name: "alternatePhone", type: "input" },
+  { name: "bestTimeToCall", type: "select" },
+];
+
+const handleEdit = () => {
+  // setIsPreview(false);
+  setStep("form"); // Go back to form
+
+};
+
+
+
+  return (
+    <div className="d-flex align-items-center justify-content-center w-100 mb-5">
+
+    <div className="p-1"     style={{
+              width: '100%',
+              // overflowY:"auto",
+              fontFamily: "Inter, sans-serif",
+              scrollbarWidth:"none"
+            }}>
+
+      {message.text && (
+          <div style={{ 
+            padding: "10px", 
+            backgroundColor: message.type === "success" ? "lightgreen" : "lightcoral", 
+            color: "black", 
+            margin: "10px 0",
+            borderRadius: "5px"
+          }}>
+            {message.text}
+          </div>
+        )}
+
+      {step === "submitted" ?  (
+            <PricingPlans phoneNumber={phoneNumber} onClose={handleCloseAddForm}/>
+    ) : step === "form" ?  (
+<form onSubmit={handleSubmit} className="w-100 p-2" style={{ fontFamily: "Inter, sans-serif"}}>
+<h4 style={{ color: "rgb(10, 10, 10)", fontWeight: "bold", marginBottom: "10px" }}> Property Management</h4>             
+
+        <p className="p-3" style={{ color: "white", backgroundColor: "rgb(47,116,127)" }}>PPC-ID: {ppcId}</p>
+                        <h3 style={{ color: "rgb(47,116,127)", fontSize: "24px", marginBottom: "10px" }}> Property Images  </h3>
+
+  <div className="form-group photo-upload-container mt-2">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={handlePhotoUpload}
+        name="photos"
+        className="photo-upload-input"
+        style={{ display: "none" }}
+      />
+      <label className="photo-upload-label fw-normal m-0">
+        <button className="m-0 p-0"
+          type="button"
+          onClick={handleClick}
+          style={{
+            border: "none",
+            background: "transparent",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+            color:"black"
+          }}
+        >
+          {loading ? (
+            <Spinner animation="border" size="sm" style={{ color: "#2e86e4", marginRight: "5px" }} />
+          ) : (
+            <MdAddPhotoAlternate
+              style={{
+                color: "white",
+                backgroundColor: "#2e86e4",
+                padding: "5px",
+                fontSize: "30px",
+                borderRadius: "50%",
+                marginRight: "5px",
+              }}
+            />
+            
+          )}
+   {loading
+            ? "Uploading..."
+            : 'Upload Your Property Images' }
+ </button>
+      </label>
+    </div>
+        {photos.length > 0 && (
+          <div className="uploaded-photos position-relative">
+            <h4>Uploaded Photos</h4>
+            <div className="uploaded-photos-grid" >
+              {photos.map((photo, index) => (
+                <div key={index} className="uploaded-photo-item">
+                  <input
+                    type="radio"
+                    name="selectedPhoto"
+                    className="position-absolute"
+                    style={{ top: '-10px' }}
+
+                    checked={selectedPhotoIndex === index}
+                    onChange={() => handlePhotoSelect(index)}
+                  />
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt="Uploaded"
+                    className="uploaded-photo m-2"
+                  />
+                  <button 
+                  style={{border:"none"}}
+            className="position-absolute top-0 end-0 btn m-0 p-1"
+    onClick={() => removePhoto(index)}
+                  >
+                    <IoCloseCircle size={20} color="#F22952"/>
+
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Video Upload Section */}
+        <h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>Property Video</h4>
         <div className="form-group">
           <input
             type="file"
@@ -313,7 +991,7 @@ const removeVideo = () => {
             className="d-none"
           />
           <label htmlFor="videoUpload" className="file-upload-label fw-normal">
-            <span className="ps-5 pt-5">
+            <span className="pt-5">
               <FaFileVideo
                 style={{
                   color: 'white',
@@ -329,636 +1007,1854 @@ const removeVideo = () => {
 
           {/* Display the selected video */}
           {video && (
-  <div className="selected-video-container">
-    <h4 className="text-start">Selected Video:</h4>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <video width="200" controls>
-        <source src={URL.createObjectURL(video)} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <Button
-        variant="danger"
-        // onClick={() => setVideo(null)}
-        // style={{ height: '40px' }}
-        onClick={removeVideo}
-        style={{ height: '40px' }}
-      >
-        Remove
-      </Button>
-    </div>
+            <div className="selected-video-container">
+              <h4 className="text-start">Selected Video:</h4>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+              <video width="200" controls>
+                  <source src={URL.createObjectURL(video)} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+                <Button
+                  variant="danger"
+                  onClick={removeVideo}
+                  style={{ border: 'none', background:"transparent"}}
+                  className="position-absolute top-0 end-0 m-1 p-1"                >
+                      <IoCloseCircle size={20} color="#F22952" />
+                  
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+{currentStep >= 1 && (
+                <div>
+                          <h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Property OverView  </h4>             
+
+  {/* Property Mode */}
+  <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>Property Mode <span style={{ color: 'red' }}>* </span></label>
+
+      <div style={{ display: "flex", alignItems: "center", width:"100%" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="propertyMode"
+            value={formData.propertyMode || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }}
+            required
+          >
+            <option value="">Select Property Mode</option>
+            {dataList.propertyMode?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            ref={formRefs.propertyMode} // Attach ref here
+
+            onClick={() => toggleDropdown("propertyMode")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.propertyMode || <FaHome />}
+            </span>
+            {formData.propertyMode || "Select Property Mode"}
+          </button>
+
+          {renderDropdown("propertyMode")}
+        </div>
+      </div>
+    </label>
   </div>
-)}
+
+  <div className="form-group">
+    <label style={{ width: '100%'}}>
+<label>Property Type <span style={{ color: 'red' }}>* </span> </label>
+      <div style={{ display: "flex", alignItems: "center"}}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="propertyType"
+            value={formData.propertyType || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} 
+            required
+          >
+            <option value="">Select property Type</option>
+            {dataList.propertyType?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            ref={formRefs.propertyType} // Attach ref here
+            onClick={() => toggleDropdown("propertyType")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.propertyType || <FaHome />}
+            </span>
+            {formData.propertyType || "Select Property Type"}
+          </button>
+
+          {renderDropdown("propertyType")}
+        </div>
+      </div>
+    </label>
+  </div>
+  {/* Price */}
+ 
+  <div className="form-group">
+  <label>Price <span style={{ color: 'red' }}>* </span> </label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaRupeeSign className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="number"
+      name="price"
+      value={formData.price}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="price"
+      required
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+  {priceInWords && (
+        <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+          {priceInWords}
+        </p>
+      )}
+  </div>
+
+  <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>Negotiation  </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="negotiation"
+            value={formData.negotiation || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select negotiation</option>
+            {dataList.negotiation?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("negotiation")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.negotiation || <FaHome />}
+            </span>
+            {formData.negotiation || "Selectnegotiation"}
+          </button>
+
+          {renderDropdown("negotiation")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+
+  </div>
+ )}
+
+
+{currentStep >= 2 && (
+                <div>
+  {/* Negotiation */}
+  <h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}> Basic Property Info  </h4>             
+
+ 
+  {/* Length */} 
+  <div className="form-group">
+  <label>length</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <AiOutlineColumnHeight className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="number"
+      name="length"
+      value={formData.length}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="length"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* Breadth */}
+  <div className="form-group">
+  <label>breadth:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <AiOutlineColumnWidth className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="number"
+      name="breadth"
+      value={formData.breadth}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="breadth"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+  </div>
+  {/* Total Area */}
+  <div className="form-group">
+  <label>Total Area: <span style={{ color: 'red' }}>* </span> </label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <RiLayoutLine className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="number"
+      name="totalArea"
+      value={formData.totalArea}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="totalArea"
+      required
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+  </div>
+
+    {/* areaUnit */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>Area Unit <span style={{ color: 'red' }}>* </span> </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="areaUnit"
+            value={formData.areaUnit || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            required
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select areaUnit</option>
+            {dataList.areaUnit?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            ref={formRefs.areaUnit} // Attach ref here
+
+            onClick={() => toggleDropdown("areaUnit")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.areaUnit || <FaHome />}
+            </span>
+            {formData.areaUnit || "Select areaUnit"}
+          </button>
+
+          {renderDropdown("areaUnit")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+  {/* Ownership */}
+  <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>Ownership </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="ownership"
+            value={formData.ownership || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select ownership</option>
+            {dataList.ownership?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("ownership")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.ownership || <FaHome />}
+            </span>
+            {formData.ownership || "Select ownership"}
+          </button>
+
+          {renderDropdown("ownership")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+  </div>
+ )}
+
+
+ {currentStep >= 3 && ( 
+                <div>
+  {/* Bedrooms */}
+  <h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Property details  </h4>             
+
+<div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>bedrooms </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="bedrooms"
+            value={formData.bedrooms || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select bedrooms</option>
+            {dataList.bedrooms?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("bedrooms")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.bedrooms || <FaHome />}
+            </span>
+            {formData.bedrooms || "Select bedrooms"}
+          </button>
+
+          {renderDropdown("bedrooms")}
+        </div>
+      </div>
+    </label>
+  </div>
+  {/* kitchen */}
+  <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>kitchen </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="kitchen"
+            value={formData.kitchen || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select kitchen</option>
+            {dataList.kitchen?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("kitchen")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.kitchen || <FaHome />}
+            </span>
+            {formData.kitchen || "Select kitchen"}
+          </button>
+
+          {renderDropdown("kitchen")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* kitchenType */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>kitchenType </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="kitchenType"
+            value={formData.kitchenType || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select kitchenType</option>
+            {dataList.kitchenType?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("kitchenType")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.kitchenType || <FaHome />}
+            </span>
+            {formData.kitchenType || "Select kitchenType"}
+          </button>
+
+          {renderDropdown("kitchenType")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* balconies */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>balconies </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="balconies"
+            value={formData.balconies || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select balconies</option>
+            {dataList.balconies?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("balconies")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.balconies || <FaHome />}
+            </span>
+            {formData.balconies || "Select balconies"}
+          </button>
+
+          {renderDropdown("balconies")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* floorNo */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>floorNo </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="floorNo"
+            value={formData.floorNo || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select floorNo</option>
+            {dataList.floorNo?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("floorNo")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.floorNo || <FaHome />}
+            </span>
+            {formData.floorNo || "Select floorNo"}
+          </button>
+
+          {renderDropdown("floorNo")}
+        </div>
+      </div>
+    </label>
+  </div>
+  </div>
+ )}
+  
+
+{currentStep >= 4 && (
+                <div>
+
+<h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Other Details  </h4>             
+
+    {/* propertyApproved */}
+
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>property Approved</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="propertyApproved"
+            value={formData.propertyApproved || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select propertyApproved</option>
+            {dataList.propertyApproved?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("propertyApproved")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.propertyApproved || <FaHome />}
+            </span>
+            {formData.propertyApproved || "Select propertyApproved"}
+          </button>
+
+          {renderDropdown("propertyApproved")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+
+    {/* Property Age */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>Property Age </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="propertyAge"
+            value={formData.propertyAge || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select Property Age</option>
+            {dataList.propertyAge?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("propertyAge")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.propertyAge || <FaHome />}
+            </span>
+            {formData.propertyAge || "Select Property Age"}
+          </button>
+
+          {renderDropdown("propertyAge")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+  {/* Bank Loan */}
+
+  <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>Bank Loan </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="bankLoan"
+            value={formData.bankLoan || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select Bank Loan</option>
+            {dataList.bankLoan?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("bankLoan")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.bankLoan || <FaHome />}
+            </span>
+            {formData.bankLoan || "Select Bank Loan"}
+          </button>
+
+          {renderDropdown("bankLoan")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+ 
+    {/* facing */}
+    <div className="form-group">
+
+    <label style={{ width: '100%'}}>
+    <label>facing</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="facing"
+            value={formData.facing || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select facing</option>
+            {dataList.facing?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("facing")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.facing || <FaHome />}
+            </span>
+            {formData.facing || "Select facing"}
+          </button>
+
+          {renderDropdown("facing")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* salesMode */}
+
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>sales Mode</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="salesMode"
+            value={formData.salesMode || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select salesMode</option>
+            {dataList.salesMode?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("salesMode")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.salesMode || <FaHome />}
+            </span>
+            {formData.salesMode || "Select salesMode"}
+          </button>
+
+          {renderDropdown("salesMode")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* salesType */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+      <label>Sale Type <span style={{ color: 'red' }}>* </span> </label>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="salesType"
+            value={formData.salesType || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            required
+            style={{ visibility: "hidden", position: "absolute" }} // Keep element in flow but hidden
+            >
+            <option value="">Select salesType</option>
+            {dataList.salesType?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+                      ref={formRefs.salesType} // Attach ref here
+
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("salesType")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.salesType || <FaHome />}
+            </span>
+            {formData.salesType || "Select salesType"}
+          </button>
+
+          {renderDropdown("salesType")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+   {/* postedBy */}
+   <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>postedBy <span style={{ color: 'red' }}>* </span> </label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="postedBy"
+
+            value={formData.postedBy || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            required
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select postedBy</option>
+            {dataList.postedBy?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            ref={formRefs.postedBy} // Attach ref here
+
+            onClick={() => toggleDropdown("postedBy")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.postedBy || <FaHome />}
+            </span>
+            {formData.postedBy || "Select postedBy"}
+          </button>
+
+          {renderDropdown("postedBy")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+  </div>
+)} 
+
+
+
+{currentStep >= 5 && (
+<div>
+<h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Property Description   </h4>             
+
+
+<div className="form-group">
+  <label>Description:</label>
+  <textarea
+    name="description"
+    onChange={handleFieldChange}
+    className="form-control"
+    placeholder="Enter Description"
+    maxLength={250} // Limits input to 250 characters
+  ></textarea>
+  <small className="text-muted">Maximum 250 characters allowed.</small>
 </div>
 
 
+  {/* furnished */}
+  <div className="form-group">
+    <label style={{width:"100%"}}>
+    <label>furnished</label>
 
-
-<Form.Group className="mb-3" controlId="price">
-  <Form.Label>Price</Form.Label>
-  <Form.Control
-    type="number"
-    name="price"
-    value={propertyDetails.price}  // This binds the value from the state
-    onChange={handleInputChange}    // Handle change for input
-    placeholder="Enter the price"  // Placeholder text
-  />
-</Form.Group>
-
-
-
-        <Form.Group className="mb-3" controlId="propertyAge">
-  <Form.Label>Property Age</Form.Label>
-  <Form.Control
-    as="select"
-    name="propertyAge"
-    value={propertyDetails.propertyAge}
-    onChange={handleInputChange}
-    
-  >
-    <option value="">Select Option</option>
-    <option value="Newly Build">Newly Build</option>
-    <option value="2 Years">2 Years</option>
-    <option value="3 Years">3 Years</option>
-    <option value="4 Years">4 Years</option>
-    <option value="5 Years">5 Years</option>
-    <option value="6 Years">6 Years</option>
-    <option value="7 Years">7 Years</option>
-    <option value="8 Years">8 Years</option>
-    <option value="9 Years">9 Years</option>
-    <option value="10 Years">10 Years</option>
-    <option value="11 Years">11 Years</option>
-    <option value="12 Years">12 Years</option>
-    <option value="13 Years">13 Years</option>
-    <option value="14 Years">14 Years</option>
-    <option value="15 Years">15 Years</option>
-    <option value="16 Years">16 Years</option>
-    <option value="17 Years">17 Years</option>
-    <option value="18 Years">18 Years</option>
-    <option value="19 Years">19 Years</option>
-    <option value="20 Years">20 Years</option>
-    <option value="20+ Years">20+ Years</option>
-  </Form.Control>
-</Form.Group>
-
-
-        <Form.Group className="mb-3" controlId="bankLoan">
-          <Form.Label>Bank Loan</Form.Label>
-          <Form.Control
-            as="select"
-            name="bankLoan"
-            value={propertyDetails.bankLoan}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="negotiation">
-          <Form.Label>Negotiation</Form.Label>
-          <Form.Control
-            as="select"
-            name="negotiation"
-            value={propertyDetails.negotiation}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="length">
-          <Form.Label>Length</Form.Label>
-          <Form.Control
-            type="number"
-            name="length"
-            value={propertyDetails.length}
-            onChange={handleInputChange}
-            placeholder="Enter length in meters"
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="breadth">
-          <Form.Label>Breadth</Form.Label>
-          <Form.Control
-            type="number"
-            name="breadth"
-            value={propertyDetails.breadth}
-            onChange={handleInputChange}
-            placeholder="Enter breadth in meters"
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="totalArea">
-          <Form.Label>Total Area</Form.Label>
-          <Form.Control
-            type="number"
-            name="totalArea"
-            value={propertyDetails.totalArea}
-            onChange={handleInputChange}
-            placeholder="Enter total area in square meters"
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="ownership">
-          <Form.Label>Ownership</Form.Label>
-          <Form.Control
-            as="select"
-            name="ownership"
-            value={propertyDetails.ownership}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Ownership</option>
-            <option value="Single Owner">Single Owner</option>
-            <option value="Multiple Owner">Multiple Owner</option>
-            <option value="Power Of Attorney">Power Of Attorney</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="bedrooms">
-  <Form.Label>Bedrooms</Form.Label>
-  <Form.Control
-    as="select"
-    name="bedrooms"
-    value={propertyDetails.bedrooms}
-    onChange={handleInputChange}
-  >
-    <option value="">Select number of bedrooms</option>
-    <option value="No">No</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-    <option value="7">7</option>
-    <option value="8">8</option>
-    <option value="9">9</option>
-    <option value="10">10</option>
-    <option value="11">11</option>
-    <option value="12">12</option>
-    <option value="13">13</option>
-    <option value="14">14</option>
-    <option value="15">15</option>
-    <option value="16">16</option>
-    <option value="17">17</option>
-    <option value="18">18</option>
-    <option value="19">19</option>
-    <option value="20">20</option>
-    <option value="20+">20+</option>
-  </Form.Control>
-</Form.Group>
-
-
-        <Form.Group className="mb-3" controlId="kitchen">
-          <Form.Label>Kitchen</Form.Label>
-          <Form.Control
-            as="select"
-            name="kitchen"
-            value={propertyDetails.kitchen}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="kitchenType">
-          <Form.Label>Kitchen Type</Form.Label>
-          <Form.Control
-            as="select"
-            name="kitchenType"
-            value={propertyDetails.kitchenType}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Type</option>
-            <option value="Modular">Modular</option>
-            <option value="Normal">Normal</option>
-            <option value="No">No</option>
-          </Form.Control>
-        </Form.Group>
-
-         {/* Balconies */}
-         <Form.Group className="mb-3" controlId="balconies">
-          <Form.Label>Balconies</Form.Label>
-          <Form.Control
-            as="select"
-            name="balconies"
-            value={propertyDetails.balconies}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Number of Balconies</option>
-            {['No', '1 Balcony', '2 Balconies', '3 Balconies', '4 Balconies', '5 Balconies', '6 Balcony', '7 Balconies', '8 Balconies', '9 Balconies', '10 Balconies', '10+ Balconies'].map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-
-        {/* Floor Number */}
-        <Form.Group className="mb-3" controlId="floorNo">
-          <Form.Label>Floor Number</Form.Label>
-          <Form.Control
-            as="select"
-            name="floorNo"
-            value={propertyDetails.floorNo}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Floor Number</option>
-            {['Lower Basement', 'Upper Basement', 'Ground Floor', 'Top Floor', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor', '5th Floor', '6th Floor', '7th Floor', '8th Floor', '9th Floor', '10th Floor'].map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-
-        {/* Area Unit */}
-        <Form.Group className="mb-3" controlId="areaUnit">
-          <Form.Label>Area Unit</Form.Label>
-          <Form.Control
-            as="select"
-            name="areaUnit"
-            value={propertyDetails.areaUnit}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Area Unit</option>
-            {['sq.ft', 'sq.meter', 'cent', 'Acre', 'Hectare'].map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-
-        {/* Property Approved */}
-        <Form.Group className="mb-3" controlId="propertyApproved">
-          <Form.Label>Property Approved</Form.Label>
-          <Form.Control
-            as="select"
-            name="propertyApproved"
-            value={propertyDetails.propertyApproved}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Option</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </Form.Control>
-        </Form.Group>
-
-        {/* Posted By */}
-        <Form.Group className="mb-3" controlId="postedBy">
-          <Form.Label>Posted By</Form.Label>
-          <Form.Control
-            as="select"
-            name="postedBy"
-            value={propertyDetails.postedBy}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Option</option>
-            <option value="Owner">Owner</option>
-            <option value="Agent">Agent</option>
-            <option value="Builder">Builder</option>
-          </Form.Control>
-        </Form.Group>
-
-        {/* Facing */}
-        <Form.Group className="mb-3" controlId="facing">
-          <Form.Label>Facing</Form.Label>
-          <Form.Control
-            as="select"
-            name="facing"
-            value={propertyDetails.facing}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Facing</option>
-            {['North', 'South', 'East', 'West', 'North-East', 'South-East', 'North-West', 'South-West', 'North-North-East', 'South-South-West', 'East-North-East', 'West-North-West'].map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-
-        {/* Sales Mode */}
-        <Form.Group className="mb-3" controlId="salesMode">
-          <Form.Label>Sales Mode</Form.Label>
-          <Form.Control
-            as="select"
-            name="salesMode"
-            value={propertyDetails.salesMode}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Sales Mode</option>
-            <option value="Full Payment">Full Payment</option>
-            <option value="Partial Payment">Partial Payment</option>
-          </Form.Control>
-        </Form.Group>
-
-        {/* Sales Type */}
-        <Form.Group className="mb-3" controlId="salesType">
-          <Form.Label>Sales Type</Form.Label>
-          <Form.Control
-            as="select"
-            name="salesType"
-            value={propertyDetails.salesType}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Sales Type</option>
-            <option value="Normal">Normal</option>
-            <option value="Urgent">Urgent</option>
-          </Form.Control>
-        </Form.Group>
-
-        {/* Description */}
-        <Form.Group className="mb-3" controlId="description">
-          <Form.Label>Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            name="description"
-            value={propertyDetails.description}
-            onChange={handleInputChange}
-            placeholder="Provide property description"
-          />
-        </Form.Group>
-
-        {/* Furnished */}
-        <Form.Group className="mb-3" controlId="furnished">
-          <Form.Label>Furnished</Form.Label>
-          <Form.Control
-            as="select"
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
             name="furnished"
-            value={propertyDetails.furnished}
-            onChange={handleInputChange}
+            value={formData.furnished || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
           >
-            <option value="">Select Furnishing Status</option>
-            <option value="Furnished">Furnished</option>
-            <option value="Unfurnished">Unfurnished</option>
-            <option value="Semi-Furnished">Semi-Furnished</option>
-          </Form.Control>
-        </Form.Group>
-
-        {/* Lift */}
-        <Form.Group className="mb-3" controlId="lift">
-          <Form.Label>Lift</Form.Label>
-          <Form.Control
-            as="select"
-            name="lift"
-            value={propertyDetails.lift}
-            onChange={handleInputChange}
-          >
-            <option value="">Has Lift?</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-            <option value="Closed">Closed</option>
-          </Form.Control>
-        </Form.Group>
-
-        {/* Attached Bathrooms */}
-        <Form.Group className="mb-3" controlId="attachedBathrooms">
-          <Form.Label>Attached Bathrooms</Form.Label>
-          <Form.Control
-            as="select"
-            name="attachedBathrooms"
-            value={propertyDetails.attachedBathrooms}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Attached Bathrooms</option>
-            {['No', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '10+'].map((option) => (
-              <option key={option} value={option}>{option}</option>
+            <option value="">Select furnished</option>
+            {dataList.furnished?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
             ))}
-          </Form.Control>
-        </Form.Group>
+          </select>
 
-        {/* Western Bathrooms */}
-        <Form.Group className="mb-3" controlId="western">
-          <Form.Label>Western Bathrooms</Form.Label>
-          <Form.Control
-            as="select"
-            name="western"
-            value={propertyDetails.western}
-            onChange={handleInputChange}
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("furnished")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
           >
-            <option value="">Select Western Bathrooms</option>
-            {['No', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '10+'].map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </Form.Control>
-        </Form.Group>
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.furnished || <FaHome />}
+            </span>
+            {formData.furnished || "Select furnished"}
+          </button>
 
-        {/* Number of Floors */}
-        <Form.Group className="mb-3" controlId="numberOfFloors">
-          <Form.Label>Number of Floors</Form.Label>
-          <Form.Control
-            as="select"
-            name="numberOfFloors"
-            value={propertyDetails.numberOfFloors}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Number of Floors</option>
-            {['UnderGround', 'GroundFloor', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '20+'].map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </Form.Control>
-        </Form.Group>
-
-        {/* Car Parking */}
-        <Form.Group className="mb-3" controlId="carParking">
-          <Form.Label>Car Parking</Form.Label>
-          <Form.Control
-            as="select"
-            name="carParking"
-            value={propertyDetails.carParking}
-            onChange={handleInputChange}
-          >
-            <option value="">Select Car Parking</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </Form.Control>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="rentalPropertyAddress">
-  <Form.Label>Rental Property Address</Form.Label>
-  <Form.Control
-    type="text"
-    name="rentalPropertyAddress"
-    value={propertyDetails.rentalPropertyAddress}
-    onChange={handleInputChange}
-    placeholder="Enter rental property address"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="country">
-  <Form.Label>Country</Form.Label>
-  <Form.Control
-    type="text"
-    name="country"
-    value={propertyDetails.country}
-    onChange={handleInputChange}
-    placeholder="Enter country"
-  />
-</Form.Group> 
-
-
-<Form.Group className="mb-3" controlId="state">
-  <Form.Label>State</Form.Label>
-  <Form.Control
-    type="text"
-    name="state"
-    value={propertyDetails.state}
-    onChange={handleInputChange}
-    placeholder="Enter state"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="city">
-  <Form.Label>City</Form.Label>
-  <Form.Control
-    type="text"
-    name="city"
-    value={propertyDetails.city}
-    onChange={handleInputChange}
-    placeholder="Enter city"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="district">
-  <Form.Label>District</Form.Label>
-  <Form.Control
-    type="text"
-    name="district"
-    value={propertyDetails.district}
-    onChange={handleInputChange}
-    placeholder="Enter district"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="area">
-  <Form.Label>Area</Form.Label>
-  <Form.Control
-    type="text"
-    name="area"
-    value={propertyDetails.area}
-    onChange={handleInputChange}
-    placeholder="Enter area"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="streetName">
-  <Form.Label>Street Name</Form.Label>
-  <Form.Control
-    type="text"
-    name="streetName"
-    value={propertyDetails.streetName}
-    onChange={handleInputChange}
-    placeholder="Enter street name"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="doorNumber">
-  <Form.Label>Door Number</Form.Label>
-  <Form.Control
-    type="text"
-    name="doorNumber"
-    value={propertyDetails.doorNumber}
-    onChange={handleInputChange}
-    placeholder="Enter door number"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="nagar">
-  <Form.Label>Nagar</Form.Label>
-  <Form.Control
-    type="text"
-    name="nagar"
-    value={propertyDetails.nagar}
-    onChange={handleInputChange}
-    placeholder="Enter nagar"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="ownerName">
-  <Form.Label>Owner Name</Form.Label>
-  <Form.Control
-    type="text"
-    name="ownerName"
-    value={propertyDetails.ownerName}
-    onChange={handleInputChange}
-    placeholder="Enter owner name"
-  />
-</Form.Group>
-
-<Form.Group className="mb-3" controlId="email">
-  <Form.Label>Email</Form.Label>
-  <Form.Control
-    type="email"
-    name="email"
-    value={propertyDetails.email}
-    onChange={handleInputChange}
-    placeholder="Enter email"
-  />
-</Form.Group>
-
-
-<Form.Group controlId="phone">
-<Form.Label> PhoneNumber </Form.Label>
-
-          
-                  <Form.Control
-                    type="text"
-                    value={phoneNumber}
-                    readOnly
-                    placeholder="Phone Number"
-                    className="form-input"
-                    disabled
-                  />
-              </Form.Group>
-
-<Form.Group className="mb-3" controlId="bestTimeToCall">
-  <Form.Label>Best Time to Call</Form.Label>
-  <Form.Control
-    as="select"
-    name="bestTimeToCall"
-    value={propertyDetails.bestTimeToCall}
-    onChange={handleInputChange}
-  >
-    <option value="">Select Option</option>
-    <option value="AnyTime">AnyTime</option>
-    <option value="Morning">Morning</option>
-    <option value="Afternoon">Afternoon</option>
-    <option value="Evening">Evening</option>
-  </Form.Control>
-</Form.Group>
-
-
-        {/* <Button variant="primary" type="submit">
-          Submit
-        </Button> */}
-
-
-
-          {/* Add other form fields here... */}
-
-          <Button variant="primary" onClick={handlePreview}>
-            Preview
-          </Button>
-        </Form>
-      ) : (
-<div>
-          <h2>Preview Property Details</h2>
-
-          {Object.entries(propertyDetails).map(([key, value]) => (
-            <p key={key}>
-              <strong>{key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}:</strong> {value || 'Not Provided'}
-            </p>
-          ))}
-
-          <Button variant="secondary" onClick={handlePreview}>
-            Edit
-          </Button>
-          <Button variant="primary" onClick={handleSubmit} style={{ marginLeft: '10px' }}>
-            Submit Property
-          </Button>
+          {renderDropdown("furnished")}
         </div>
-      )}
+      </div>
+    </label>
+  </div>
+    {/*lift */}
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+      <label>lift</label>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="lift"
+            value={formData.lift || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select lift</option>
+            {dataList.lift?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("lift")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.lift || <FaHome />}
+            </span>
+            {formData.lift || "Select lift"}
+          </button>
+
+          {renderDropdown("lift")}
+        </div>
+      </div>
+    </label>
+  </div>
+
+      {/*attachedBathrooms */}
+      <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>attached Bathrooms</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="attachedBathrooms"
+            value={formData.attachedBathrooms || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select attachedBathrooms</option>
+            {dataList.attachedBathrooms?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("attachedBathrooms")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.attachedBathrooms || <FaHome />}
+            </span>
+            {formData.attachedBathrooms || "Select attachedBathrooms"}
+          </button>
+
+          {renderDropdown("attachedBathrooms")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* western */}
+    <div className="form-group">
+
+    <label style={{ width: '100%'}}>
+    <label>western</label>
+
+      <div style={{ display: "flex", alignItems: "center"}}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="western"
+            value={formData.western || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select western</option>
+            {dataList.western?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("western")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.western || <FaHome />}
+            </span>
+            {formData.western || "Select western"}
+          </button>
+
+          {renderDropdown("western")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* numberOfFloors */}
+    <div className="form-group">
+
+    <label style={{ width: '100%'}}>
+    <label>number Of Floors</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="numberOfFloors"
+            value={formData.numberOfFloors || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select numberOfFloors</option>
+            {dataList.numberOfFloors?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("numberOfFloors")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.numberOfFloors || <FaHome />}
+            </span>
+            {formData.numberOfFloors || "Select numberOfFloors"}
+          </button>
+
+          {renderDropdown("numberOfFloors")}
+        </div>
+      </div>
+    </label>
+  </div>
+    {/* carParking */}
+
+    <div className="form-group">
+    <label style={{ width: '100%'}}>
+    <label>car Parking</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="carParking"
+            value={formData.carParking || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select carParking</option>
+            {dataList.carParking?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("carParking")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.carParking || <FaHome />}
+            </span>
+            {formData.carParking || "Select carParking"}
+          </button>
+
+          {renderDropdown("carParking")}
+        </div>
+      </div>
+    </label>
+  </div>
+  </div>
+ )} 
+
+
+
+
+  {/*   rentalPropertyAddress */}
+  {currentStep >= 6 && (
+<div>
+
+<h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Property Address   </h4>             
+
+
+  <div className="form-group">
+<label>Property Address:</label>
+
+<div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', border: '1px solid #2F747F', background:"#fff"}}>
+    <FaHome className="input-icon" 
+    style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="rentalPropertyAddress"
+      value={formData.rentalPropertyAddress}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Property Address"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+
+
+  {/* country */}
+
+  <div className="form-group">
+  <label>country:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <BiWorld className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="country"
+      value={formData.country}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="country"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+  </div>
+  
+  {/* State */}
+
+<div className="form-group">
+  <label>State:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <MdLocationCity className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="state"
+      value={formData.state}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="State"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* City */}
+
+<div className="form-group">
+  <label>City:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaCity className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="city"
+      value={formData.city}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="City"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+
+  {/* district */}
+  <div className="form-group">
+  <label>District:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="district"
+      value={formData.district}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="District"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* area */}
+  <div className="form-group">
+  <label>Area:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <MdLocationOn className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="area"
+      value={formData.area}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Area"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* streetName */}
+  <div className="form-group">
+  <label>Street Name:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaRoad className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="streetName"
+      value={formData.streetName}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Street Name"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* doorNumber */}
+  <div className="form-group">
+  <label>Door Number:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaDoorClosed className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="number"
+      name="doorNumber"
+      value={formData.doorNumber}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Door Number"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+  </div>
+
+  {/* Nagar */}
+  <div className="form-group">
+  <label>Nagar:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaMapPin className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="nagar"
+      value={formData.nagar}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Nagar"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+
+<h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Owner Details   </h4>             
+  {/* Owner Name */}
+
+<div className="form-group">
+  <label>Owner Name:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaUserAlt className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="text"
+      name="ownerName"
+      value={formData.ownerName}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Owner Name"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+
+  {/* Email */}
+  <div className="form-group">
+  <label>Email:</label>
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaEnvelope className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <input
+      type="email"
+      name="email"
+      value={formData.email}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Email"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* Phone Number */}
+
+<div className="form-group">
+<label>Phone Number:</label>
+
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaPhone className="input-icon" style={{ color: '#2F747F', marginLeft:"10px" }} />
+    
+    <div style={{ flex: '0 0 10%' }}>
+      <label>
+        <select
+          name="countryCode"
+          value={formData.countryCode || ""}
+          disabled
+          onChange={handleFieldChange}
+          className="form-control mt-1 pt-2"
+          style={{ width: '100%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+        >
+          <option value="">Select Country Code</option>
+          {countryCodes.map((item, index) => (
+            <option key={index} value={item.code}>
+              {item.code} - {item.country}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+
+    <input
+      type="text"
+      name="phoneNumber"
+      value={phoneNumber}
+      readOnly
+      className="form-input m-0"
+      placeholder="Phone Number"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+  {/* Alternate Number */}
+
+<div className="form-group">
+<label>Alternate number:</label>
+
+  <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
+    <FaPhone className="input-icon" style={{ color: '#2F747F', marginLeft:"10px" }} />
+    
+    <div style={{ flex: '0 1 10%' }}>
+      <label>
+        <select
+          name="countryCode"
+          value={formData.countryCode || ""}
+          onChange={handleFieldChange}
+          className="form-control m-0"
+          style={{ width: '100%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+        >
+          <option value="">Select Country Code</option>
+          {countryCodes.map((item, index) => (
+            <option key={index} value={item.code}>
+              {item.code} - {item.country}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+
+    <input
+      type="number"
+      name="alternatePhone"
+      value={formData.alternatePhone}
+      onChange={handleFieldChange}
+      className="form-input m-0"
+      placeholder="Alternate Phone Number"
+      style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
+    />
+  </div>
+</div>
+
+<div className="form-group">
+  <label>Created At:</label>
+  <div className="input-card p-2 rounded-1" style={{ border: '1px solid #2F747F', background:"#fff" }}>
+    <span>{moment(formData.createdAt).format("DD-MM-YYYY HH:mm A")}</span>
+  </div>
+</div>
+
+
+  {/* Best Time to Call */}
+  <div className="form-group" >
+    <label style={{width:'100%'}}>
+    <label>best Time To Call</label>
+
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ flex: "1" }}>
+          <select
+            name="bestTimeToCall"
+            value={formData.bestTimeToCall || ""}
+            onChange={handleFieldChange}
+            className="form-control"
+            style={{ display: "none" }} // Hide the default <select> dropdown
+          >
+            <option value="">Select bestTimeToCall</option>
+            {dataList.bestTimeToCall?.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="m-0"
+            type="button"
+            onClick={() => toggleDropdown("bestTimeToCall")}
+            style={{
+              cursor: "pointer",
+              border: "1px solid #2F747F",
+              padding: "10px",
+              background: "#fff",
+              borderRadius: "5px",
+              width: "100%",
+              textAlign: "left",
+              color: "#2F747F",
+            }}
+          >
+            <span style={{ marginRight: "10px" }}>
+              {fieldIcons.bestTimeToCall || <FaHome />}
+            </span>
+            {formData.bestTimeToCall || "Select bestTimeToCall"}
+          </button>
+
+          {renderDropdown("bestTimeToCall")}
+        </div>
+      </div>
+    </label>
+  </div>
+  </div>
+)}
+
+
+
+              {/* Show "Show More" button */}
+              <div className="text-center mt-4">
+                <div
+                  style={{
+                    display: 'inline-block',
+                    backgroundColor: '#6CBAAF',
+                    padding: '5px',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                  }}
+                  onClick={handleShowMore}
+                >
+                  <MdKeyboardDoubleArrowDown
+                    size={30}
+                    style={{
+                      // color: '#ffffff ',
+                      opacity: isVisible ? 1 : 0,
+                      animation: isVisible
+                        ? 'bounce 1s ease-in-out infinite' // Bounce animation
+                        : '', // No animation until visible
+                      transition: 'opacity 0.6s ease', // Fade-in effect
+                    }}
+                  />
+                    <style jsx>{`
+        @keyframes bounce {
+          0% {
+            transform: translateY(-5px);
+                        color: #ffffff; /* Initial color */
+
+          }
+          // 50% {
+          //   transform: translateY(0px); /* Move up */
+          // }
+          100% {
+            transform: translateY(5px); /* Back to original position */
+                                  color: rgb(20, 195, 90); /* Initial color */
+}
+        }
+      `}</style>
+                </div>
+              </div>
+
+              {/* Step 3: Submit all data */}
+              {currentStep > 6 && (
+                <Button
+                  type="submit"
+                  style={{ marginTop: '15px', backgroundColor: "rgb(47,116,127)" }}
+                  onClick={handlePreview}
+                >
+                  PreView
+                </Button>
+           )} 
+
+      </form>
+      ) :  (
+
+<div ref={previewRef} className="preview-section ">
+       
+       <div className="preview-section row d-flex align-items-center justify-content-center">
+       {photos.length > 0 || video ? (
+         <Swiper navigation modules={[Navigation]} className="swiper-container">
+           {photos.map((photo, index) => (
+             <SwiperSlide key={index}
+             className="d-flex justify-content-center align-items-center"
+             style={{
+               height: "200px",
+               width: "100%",
+               overflow: "hidden",
+               borderRadius: "8px",
+               margin: "auto",
+               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+               cursor: "pointer",
+             }}>
+               <img
+                 src={URL.createObjectURL(photo)}
+                 alt={`Preview ${index + 1}`}
+                 className="preview-image"
+                 style={{
+                   height: "100%",
+                   width: "100%",
+                   objectFit: "cover",
+                 }}
+               />
+             </SwiperSlide>
+           ))}
+           {video && (
+             <SwiperSlide>
+               <div
+             className="d-flex justify-content-center align-items-center"
+             style={{
+               height: "200px",
+               width: "100%",
+               overflow: "hidden",
+               borderRadius: "8px",
+               margin: "auto",
+               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+               cursor: "pointer",
+             }}
+           >
+               <video controls className="preview-video" style={{ width: "100%", height: "200px", objectFit: "cover" }}>
+                 <source src={URL.createObjectURL(video)} type={video.type} />
+                 Your browser does not support the video tag.
+               </video>
+               </div>
+             </SwiperSlide>
+           )}
+         </Swiper>
+       ) : (
+         <p>No media uploaded.</p>
+       )}
+
+<div className="row">
+<p className="m-0" style={{
+        color: "#4F4B7E",
+        fontWeight: 'bold',
+        fontSize: "26px"
+      }}>
+        <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+    
+        <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+           Negotiation: {formData.negotiation || "N/A"}
+        </span>
+      </p>
+      {priceInWords && (
+            <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+              {priceInWords}
+            </p>
+ )}
+ 
+{propertyDetailsList.map((detail, index) => {
+// Check if it's a heading, which should always be full-width (col-12)
+if (detail.heading) {
+  return (
+    <div key={index} className="col-12">
+      <h4
+        className="mb-3 fw-bold"
+        style={{ color: "#000000", fontFamily: "Inter, sans-serif", fontSize: "16px" }}
+      >
+        {detail.label}
+      </h4>
     </div>
   );
-};
+}
 
-export default AddProp;
+const isDescription = detail.label === "Description";
+
+const columnClass = isDescription ? "col-12" : "col-6";
+
+return (
+  <div key={index} className={columnClass}>
+    <div
+      className="d-flex align-items-center border rounded p-3 mb-1"
+      style={{
+        backgroundColor: "#F9F9F9", // Background for the item
+        width: "100%",
+        height: isDescription ? "auto" : "100px",
+        wordBreak: "break-word",
+      }}
+    >
+      <span className="me-3 fs-3" style={{ color: "#30747F" }}>
+        {detail.icon} 
+      </span>
+      <div>
+      {!isDescription && <h6 className="mb-1">{detail.label || "N/A"}</h6>}  {/* ✅ Hide label for description */}
+
+        <p
+          className="mb-0 p-0"
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            width: "100%", // Ensure the value takes full width
+          }}
+        >
+          {detail.value || "N/A"} 
+        </p>
+      </div>
+    </div>
+  </div>
+);
+})}
+</div>
+
+
+      </div>
+      <button
+        type="button"
+        style={{ background: "#2F747F", color: "#fff" }}
+        onClick={handleEdit}
+      >
+        Edit
+      </button>
+      <button
+        type="button"
+        style={{ border: "1px solid #2F747F",background:"none" , color: "#2F747F" , marginLeft: '10px', fontWeight:"bold"}}
+        onClick={handleSubmit}
+      >
+        Submit Property
+      </button> 
+      </div>
+      )
+    }
+
+    </div>
+    </div>
+
+  );
+}
+
+export default AddProps;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

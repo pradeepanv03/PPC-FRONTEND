@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
@@ -54,7 +53,6 @@ function AddProperty() {
     // Clean up the timeout on unmount
     return () => clearTimeout(timer);
   }, []);
-  // const [ppcId, setPpcId] = useState(location.state?.ppcId || ""); 
   const [formData, setFormData] = useState({
     propertyMode: '',
     propertyType: '',
@@ -95,6 +93,7 @@ function AddProperty() {
     nagar: '',
     ownerName: '',
     email: '',
+    countryCode:"+91",
     phoneNumber: "",
   phoneNumberCountryCode: "",
   alternatePhone: "",
@@ -786,7 +785,6 @@ const handleEdit = () => {
               width: '100%',
               maxWidth: '450px',
               minWidth: '300px',
-              // padding: '5px',
               borderRadius: '8px',
             }}>
               <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
@@ -1864,11 +1862,6 @@ const handleEdit = () => {
 <div>
 <h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Property Description   </h4>             
 
-  {/* Description */}
-  {/* <div className="form-group">
-    <label>Description:</label>
-    <textarea name="description" onChange={handleFieldChange} className="form-control" placeholder="Enter Description"></textarea>
-  </div> */}
 
 <div className="form-group">
   <label>Description:</label>
@@ -2389,6 +2382,7 @@ const handleEdit = () => {
         <select
           name="countryCode"
           value={formData.countryCode || ""}
+          disabled
           onChange={handleFieldChange}
           className="form-control m-0"
           style={{ width: '100%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
@@ -2521,7 +2515,6 @@ const handleEdit = () => {
                   <MdKeyboardDoubleArrowDown
                     size={30}
                     style={{
-                      // color: '#ffffff ',
                       opacity: isVisible ? 1 : 0,
                       animation: isVisible
                         ? 'bounce 1s ease-in-out infinite' // Bounce animation
@@ -2616,22 +2609,25 @@ const handleEdit = () => {
          <p>No media uploaded.</p>
        )}
 <div className="row">
+
+
 <p className="m-0" style={{
-      color: "#4F4B7E",
-      fontWeight: 'bold',
-      fontSize: "26px"
-    }}>
-      <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
-  
-      <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
-         Negotiation: {formData.negotiation || "N/A"}
-      </span>
-    </p>
-    {priceInWords && (
-          <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
-            {priceInWords}
-          </p>
-        )}
+        color: "#4F4B7E",
+        fontWeight: 'bold',
+        fontSize: "26px"
+      }}>
+        <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+    
+        <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+           Negotiation: {formData.negotiation || "N/A"}
+        </span>
+      </p>
+      {priceInWords && (
+            <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+              {priceInWords}
+            </p>
+)}
+
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
 if (detail.heading) {
@@ -2649,8 +2645,6 @@ if (detail.heading) {
 
 const isDescription = detail.label === "Description";
 
-// const isDescription = typeof detail.value === "string" && detail.value.trim() === formData.description.trim();
-// const columnClass = isDescription ? "col-12" : "col-6";
 const columnClass = isDescription ? "col-12" : "col-6";
 
 return (
@@ -2662,7 +2656,6 @@ return (
         width: "100%",
         height: isDescription ? "auto" : "100px",
         wordBreak: "break-word",
-        // height: detail.label === "Description" || detail.value === formData.description ? "auto" : "100px", // Full height for description
       }}
     >
       <span className="me-3 fs-3" style={{ color: "#30747F" }}>
@@ -2671,7 +2664,6 @@ return (
       <div>
       {!isDescription && <h6 className="mb-1">{detail.label || "N/A"}</h6>}  {/* ✅ Hide label for description */}
 
-      {/* <h6 className="mb-1">{isDescription ? "Description" : detail.label || "N/A"}</h6> */}
         <p
           className="mb-0 p-0"
           style={{

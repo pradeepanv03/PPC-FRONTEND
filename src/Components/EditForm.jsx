@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
@@ -41,13 +38,8 @@ function EditForm({ ppcId, phoneNumber }) {
     const [currentStep, setCurrentStep] = useState(1);
     const swiperRef = useRef(null);
 
-  // const ppcId = location.state?.ppcId || "";
-    // const { ppcId, phoneNumber } = location.state || {};
-
-  // const [ppcId, setPpcId] = useState(location.state?.ppcId || ""); 
   const [formData, setFormData] = useState({
     ppcId: "",
-    // ppcId: ppcId || "",  
     propertyMode: '',
     propertyType: '',
     price: '',
@@ -87,7 +79,7 @@ function EditForm({ ppcId, phoneNumber }) {
     nagar: '',
     ownerName: '',
     email: '',
-    // phoneNumber: "",
+    countryCode:"+91",
     phoneNumber: phoneNumber || "", 
   phoneNumberCountryCode: "",
   alternatePhone: "",
@@ -545,66 +537,6 @@ const convertToIndianRupees = (num) => {
     }
   };
 
-  
-// const fieldIcons = {
-//   // Contact Details
-//   phoneNumber: <FaPhone color="#2F747F" />,
-//   alternatePhone: <FaPhone color="#2F747F" />,
-//   email: <FaEnvelope color="#2F747F" />,
-//   bestTimeToCall: <MdSchedule color="#2F747F" />,
-  
-//   // Property Location
-//   rentalPropertyAddress: <MdLocationCity color="#2F747F" />,
-//   country: <BiWorld color="#2F747F" />,
-//   state: <MdLocationCity color="#2F747F" />,
-//   city: <FaCity color="#2F747F" />,
-//   district: <FaRegAddressCard color="#2F747F" />,
-//   area: <MdLocationOn color="#2F747F" />,
-//   streetName: <RiLayoutLine color="#2F747F" />,
-//   doorNumber: <BiBuildingHouse color="#2F747F" />,
-//   nagar: <FaRegAddressCard color="#2F747F" />,
-
-//   // Ownership & Posting Info
-//   ownerName: <FaUserAlt color="#2F747F" />,
-//   postedBy: <FaUserAlt color="#2F747F" />,
-//   ownership: <HiUserGroup color="#2F747F" />,
-
-//   // Property Details
-//   propertyMode: <MdApproval color="#2F747F" />,
-//   propertyType: <MdOutlineOtherHouses color="#2F747F" />,
-//   propertyApproved: <BsFillHouseCheckFill color="#2F747F" />,
-//   propertyAge: <MdSchedule color="#2F747F" />,
-//   description: <BsTextareaT color="#2F747F" />,
-
-//   // Pricing & Financials
-//   price: <FaRupeeSign color="#2F747F" />,
-//   bankLoan: <BsBank color="#2F747F" />,
-//   negotiation: <GiMoneyStack color="#2F747F" />,
-
-//   // Measurements
-//   length: <MdStraighten color="#2F747F" />,
-//   breadth: <MdStraighten color="#2F747F" />,
-//   totalArea: <GiResize color="#2F747F" />,
-//   areaUnit: <FaChartArea color="#2F747F" />,
-
-//   // Room & Floor Details
-//   bedrooms: <FaBed color="#2F747F" />,
-//   kitchen: <GiKitchenScale color="#2F747F" />,
-//   kitchenType: <GiKitchenScale color="#2F747F" />,
-//   balconies: <MdOutlineMeetingRoom color="#2F747F" />,
-//   floorNo: <BsBuildingsFill color="#2F747F" />,
-//   numberOfFloors: <BsBuildingsFill color="#2F747F" />,
-//   attachedBathrooms: <FaBath color="#2F747F" />,
-//   western: <FaToilet  color="#2F747F" />,
-
-//   // Features & Amenities
-//   facing: <TbArrowLeftRight color="#2F747F" />,
-//   salesMode: <GiGears color="#2F747F" />,
-//   salesType: <MdOutlineOtherHouses color="#2F747F" />,
-//   furnished: <FaHome color="#2F747F" />,
-//   lift: <BsBuildingsFill color="#2F747F" />,
-//   carParking: <FaCar color="#2F747F" />,
-// };
 
     const fieldIcons = {
       // Contact Details
@@ -665,97 +597,6 @@ const convertToIndianRupees = (num) => {
       lift: <MdElevator color="#2F747F" />,
       carParking: <FaCar color="#2F747F" />,
     };
-
-
-    // const renderDropdown = (field) => {
-    //   const options = dataList[field] || [];
-    //   const filteredOptions = options.filter((option) =>
-    //     option.toLowerCase().includes(dropdownState.filterText.toLowerCase())
-    //   );
-  
-    //   return (
-    //     dropdownState.activeDropdown === field && (
-    //       <div
-    //         className="dropdown-popup"
-    //         style={{
-    //           position: 'fixed',
-    //           top: '50%',
-    //           left: '50%',
-    //           transform: 'translate(-50%, -50%)',
-    //           backgroundColor: '#fff',
-    //           width: '100%',
-    //           maxWidth: '400px',
-    //           padding: '10px',
-    //           zIndex: 10,
-    //           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    //           borderRadius: '8px',
-    //           overflowY: 'auto',
-    //           maxHeight: '50vh',
-    //           animation: 'popupOpen 0.3s ease-in-out',
-    //         }}
-    //       >
-    //         <div
-    //           style={{
-    //             display: 'flex',
-    //             justifyContent: 'space-between',
-    //             alignItems: 'center',
-    //           }}
-    //         >
-    //           <input
-    //             type="text"
-    //             placeholder="Filters options..."
-    //             value={dropdownState.filterText}
-    //             onChange={handleFilterChange}
-    //             style={{
-    //               width: '80%',
-    //               padding: '5px',
-    //               marginBottom: '10px',
-    //             }}
-    //           />
-    //           <button
-    //             type="button"
-    //             onClick={() => toggleDropdown(field)}
-    //             style={{
-    //               cursor: 'pointer',
-    //               border: 'none',
-    //               background: 'none',
-    //             }}
-    //           >
-    //             <FaTimes size={18} color="red" />
-    //           </button>
-    //         </div>
-    //         <ul
-    //           style={{
-    //             listStyleType: 'none',
-    //             padding: 0,
-    //             margin: 0,
-    //           }}
-    //         >
-    //           {filteredOptions.map((option, index) => (
-    //             <li
-    //               key={index}
-    //               onClick={() => {
-    //                 setFormData((prevState) => ({
-    //                   ...prevState,
-    //                   [field]: option,
-    //                 }));
-    //                 toggleDropdown(field);
-    //               }}
-    //               style={{
-    //                 padding: '5px',
-    //                 cursor: 'pointer',
-    //                 backgroundColor: '#f9f9f9',
-    //                 marginBottom: '5px',
-    //               }}
-    //             >
-    //               {option}
-    //             </li>
-    //           ))}
-    //         </ul>
-    //       </div>
-    //     )
-    //   );
-    // };
 
 
 const fieldLabels = {
@@ -969,7 +810,7 @@ const handleEdit = () => {
           photoUrl = URL.createObjectURL(photo);
         } else if (typeof photo === "string") {
           // photoUrl = photo; // Direct URL from the backend
-          photoUrl = `http://localhost:5006/${photo}`;
+          photoUrl = `http://localhost:5000/${photo}`;
 
         } else {
           console.error("Invalid photo format:", photo);
@@ -2498,6 +2339,7 @@ onClick={() => removePhoto(index)}>
         <select
           name="countryCode"
           value={formData.countryCode || ""}
+          disabled
           onChange={handleFieldChange}
           className="form-control m-0"
           style={{ width: '100%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
@@ -2646,7 +2488,7 @@ onClick={() => removePhoto(index)}>
           photoUrl = URL.createObjectURL(photo);
         } else if (typeof photo === "string") {
           // photoUrl = photo; // Direct URL from the backend
-          photoUrl = `http://localhost:5006/${photo}`;
+          photoUrl = `http://localhost:5000/${photo}`;
   
         } else {
           console.error("Invalid photo format:", photo);
@@ -2732,23 +2574,23 @@ onClick={() => removePhoto(index)}>
   </div>
   </div>
 <div className="row w-100">
-<p className="m-0" style={{
-      color: "#4F4B7E",
-      fontWeight: 'bold',
-      fontSize: "26px"
-    }}>
-      <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
-  
-      <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
-         Negotiation: {formData.negotiation || "N/A"}
-      </span>
-    </p>
-    {priceInWords && (
-          <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
-            {priceInWords}
-          </p>
-        )}
 
+<p className="m-0" style={{
+        color: "#4F4B7E",
+        fontWeight: 'bold',
+        fontSize: "26px"
+      }}>
+        <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+    
+        <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+           Negotiation: {formData.negotiation || "N/A"}
+        </span>
+      </p>
+      {priceInWords && (
+            <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+              {priceInWords}
+            </p>
+)}
   
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
@@ -2767,8 +2609,7 @@ if (detail.heading) {
 
 const isDescription = detail.label === "Description";
 
-// const isDescription = typeof detail.value === "string" && detail.value.trim() === formData.description.trim();
-// const columnClass = isDescription ? "col-12" : "col-6";
+
 const columnClass = isDescription ? "col-12" : "col-6";
 
 return (
@@ -2777,10 +2618,8 @@ return (
       className="d-flex align-items-center border rounded p-1 m-1"
       style={{
         backgroundColor: "#F9F9F9", // Background for the item
-        // width: "100%",
         height: isDescription ? "auto" : "100px",
         wordBreak: "break-word",
-        // height: detail.label === "Description" || detail.value === formData.description ? "auto" : "100px", // Full height for description
       }}
     >
       <span className="me-3 fs-3" style={{ color: "#30747F" }}>
@@ -2813,16 +2652,9 @@ return (
             style={{ background: "#2F747F", color: "#fff" }}
             onClick={handleEdit}
           >
-            Edit Number
+            Edit 
           </button>
-          {/* <button
-          className="mt-2"
-            type="button"
-            style={{ border: "1px solid #2F747F",background:"none" , color: "#2F747F" , fontWeight:"bold"}}
-            onClick={handleSubmit}
-          >
-            Submit Property
-          </button> */}
+    
 <Button
   type="submit"
   style={{
