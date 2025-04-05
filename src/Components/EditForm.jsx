@@ -814,7 +814,7 @@ const handleEdit = () => {
           photoUrl = URL.createObjectURL(photo);
         } else if (typeof photo === "string") {
           // photoUrl = photo; // Direct URL from the backend
-          photoUrl = `http://localhost:5000/${photo}`;
+          photoUrl = `http://localhost:5006/${photo}`;
 
         } else {
           console.error("Invalid photo format:", photo);
@@ -2492,7 +2492,7 @@ onClick={() => removePhoto(index)}>
           photoUrl = URL.createObjectURL(photo);
         } else if (typeof photo === "string") {
           // photoUrl = photo; // Direct URL from the backend
-          photoUrl = `http://localhost:5000/${photo}`;
+          photoUrl = `http://localhost:5006/${photo}`;
   
         } else {
           console.error("Invalid photo format:", photo);
