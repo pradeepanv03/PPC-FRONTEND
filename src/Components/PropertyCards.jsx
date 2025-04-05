@@ -349,9 +349,6 @@ const PropertyCards = ({phoneNumber}) => {
         height: "100%",
       }}
     />
-
- 
-
     {/* Icons */}
     <div
       style={{
@@ -416,9 +413,6 @@ const PropertyCards = ({phoneNumber}) => {
                 Negotiable                </span> 
                   </h6>
                </div>
-               {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                 <h4 className="m-0" style={{ color:'#2F747F', fontSize:'13px'}}> Negotiable: <span style={{ color:'#555555' }}>{property.negotiation || 'N/A'}</span></h4>
-               </div> */}
               </div>
             </div>
           </div>
