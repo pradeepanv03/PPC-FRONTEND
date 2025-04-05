@@ -213,26 +213,7 @@ const PropertyCards = ({phoneNumber}) => {
                 margin: 0,
               }}
             >
-              {/* {filteredOptions.map((option, index) => (
-                <li
-                  key={index}
-                  onClick={() => {
-                    setAdvancedFilters((prevState) => ({
-                      ...prevState,
-                      [field]: option,
-                    }));
-                    toggleDropdown(field);
-                  }}
-                  style={{
-                    padding: '5px',
-                    cursor: 'pointer',
-                    backgroundColor: '#f9f9f9',
-                    marginBottom: '5px',
-                  }}
-                >
-                  {option}
-                </li>
-              ))} */}
+          
 
 {filteredOptions.map((option, index) => (
   <li
