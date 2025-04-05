@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
@@ -27,6 +28,9 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import { IoCloseCircle } from "react-icons/io5";
 import { GrSteps } from "react-icons/gr";
+import moment from "moment";
+
+
 
 function EditForm({ ppcId, phoneNumber }) {
     const previewRef = useRef(null);
@@ -93,9 +97,7 @@ function EditForm({ ppcId, phoneNumber }) {
   const [isPreview, setIsPreview] = useState(false);
   const [step, setStep] = useState("form");
 
-  // const handlePreview = () => {
-  //   setIsPreview(!isPreview);
-  // };
+
   const handlePreview = () => {
     setIsPreview(!isPreview);
     setIsPreviewOpen(true); // Open the preview
@@ -107,8 +109,14 @@ function EditForm({ ppcId, phoneNumber }) {
   };
   
 
+  
+const formattedCreatedAt = Date.now
+? moment(formData.createdAt).format("DD-MM-YYYY") 
+: "N/A";
 
-
+const formattedUpdatedAt = formData.updatedAt
+  ? moment(formData.updatedAt).format("DD-MM-YYYY")
+  : "N/A";
   
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -117,7 +125,6 @@ function EditForm({ ppcId, phoneNumber }) {
         const data = response.data.user;
         setPhotos(
           Array.isArray(data.photos) 
-            // ? data.photos.map(photo => (typeof photo === "string" ? photo : photo.photo)) 
             ? data.photos.map(photo => (typeof photo === "string" ? photo : photo.photoUrl)) 
 
             : []
@@ -188,17 +195,14 @@ function EditForm({ ppcId, phoneNumber }) {
     { icon: <MdHomeWork />, label: "Property Mode", value:  formData.propertyMode},
     { icon: <MdHouseSiding />, label: "Property Type", value: formData.propertyType },
     { icon: <MdOutlineCurrencyRupee />, label: "Price", value: formData.price },
-    // { icon: <FaBalanceScale />, label: "Negotiation", value: formData.negotiation },
     { icon: <AiOutlineColumnWidth />, label: "Length", value: formData.length },
     { icon: <AiOutlineColumnHeight />, label: "Breadth", value: formData.breadth  },
-    // { icon: <RiLayoutLine />, label: "Total Area", value: formData.totalArea},
     {
       icon: <RiLayoutLine />,
       label: "Total Area",
       value: `${formData.totalArea} ${formData.areaUnit}`, // Combined value
     },
     
-    // { icon: <BiRuler />, label: "Area Unit", value: formData.areaUnit },
     { icon: <FaUserAlt />, label: "Ownership", value: formData.ownership },
     { icon: <MdApproval />, label: "Property Approved", value: formData.propertyApproved },
     { icon: <MdTimer />, label: "Property Age", value: formData.propertyAge },
@@ -226,8 +230,8 @@ function EditForm({ ppcId, phoneNumber }) {
     { icon: <BsGraphUp />, label: "Sale Mode", value: formData.salesMode },
     { icon: <BsBarChart />, label: "Sales Type", value: formData.salesType },
     { icon: <BiUser />, label: "Posted By", value: formData.postedBy },
-    // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
-    { icon: <BiCalendar />, label: "Posted On", value: formData.createdAt },
+    { icon: <BiCalendar />, label: "Posted On",value:formattedCreatedAt},
+    { icon: <BiCalendar />, label: "Update On",value:formattedUpdatedAt},
     { heading: true, label: "Description" }, // Heading 3
     { icon: <FaFileAlt />, label: "Description" ,value: formData.description },
   
@@ -537,7 +541,7 @@ const convertToIndianRupees = (num) => {
     }
   };
 
-
+ 
     const fieldIcons = {
       // Contact Details
       phoneNumber: <MdPhone color="#2F747F" />,
@@ -2652,9 +2656,9 @@ return (
             style={{ background: "#2F747F", color: "#fff" }}
             onClick={handleEdit}
           >
-            Edit 
+            Edit Number
           </button>
-    
+     
 <Button
   type="submit"
   style={{

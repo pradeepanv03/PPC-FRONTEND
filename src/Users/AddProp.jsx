@@ -2569,14 +2569,6 @@ const handleEdit = () => {
   </div>
 </div>
 
-<div className="form-group">
-  <label>Created At:</label>
-  <div className="input-card p-2 rounded-1" style={{ border: '1px solid #2F747F', background:"#fff" }}>
-    <span>{moment(formData.createdAt).format("DD-MM-YYYY HH:mm A")}</span>
-  </div>
-</div>
-
-
   {/* Best Time to Call */}
   <div className="form-group" >
     <label style={{width:'100%'}}>

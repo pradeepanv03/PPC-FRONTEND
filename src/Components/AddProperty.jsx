@@ -19,7 +19,6 @@ import { BiBuilding, BiStreetView } from "react-icons/bi";
 import { GiStairs, GiForkKnifeSpoon, GiWindow } from "react-icons/gi";
 import { AiOutlineEye, AiOutlineColumnWidth, AiOutlineColumnHeight } from "react-icons/ai";
 import { BiBed, BiBath, BiCar, BiCalendar, BiUser, BiCube } from "react-icons/bi";
-import { toast } from "react-toastify";
 import Plans from './PricingPlans';
 import PricingPlans from "./PricingPlans";
 import "swiper/css";
@@ -27,6 +26,8 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { IoCloseCircle } from "react-icons/io5";
+import moment from "moment";
+
 
 function AddProperty() {
   const location = useLocation();
@@ -53,6 +54,7 @@ function AddProperty() {
     // Clean up the timeout on unmount
     return () => clearTimeout(timer);
   }, []);
+  // const [ppcId, setPpcId] = useState(location.state?.ppcId || ""); 
   const [formData, setFormData] = useState({
     propertyMode: '',
     propertyType: '',
@@ -128,6 +130,12 @@ function AddProperty() {
     postedBy: useRef(null),
   };
   
+   
+const formattedCreatedAt = Date.now
+? moment(formData.createdAt).format("DD-MM-YYYY") 
+: "N/A";
+
+
   const handlePreview = () => {
     const requiredFields = Object.keys(formRefs);
   
@@ -201,7 +209,7 @@ function AddProperty() {
 
     { icon: <BsGraphUp />, label: "Sale Mode", value: formData.salesMode },
     { icon: <BsBarChart />, label: "Sales Type", value: formData.salesType },
-    { icon: <BiUser />, label: "Posted By", value: formData.postedBy },
+    { icon: <BiUser />, label: "Posted By", value:formattedCreatedAt},
     // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
     { icon: <BiCalendar />, label: "Posted On", value: "Dec 20, 2024" },
     { heading: true, label: "Description" }, // Heading 3
@@ -354,7 +362,6 @@ function AddProperty() {
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
-    // setFormData({ ...formData, [name]: value });
     setFormData((prev) => ({
       ...prev,
       [name]: value, // This dynamically updates the correct field (phoneNumberCountryCode or alternatePhoneCountryCode)
@@ -785,6 +792,7 @@ const handleEdit = () => {
               width: '100%',
               maxWidth: '450px',
               minWidth: '300px',
+              // padding: '5px',
               borderRadius: '8px',
             }}>
               <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
@@ -2644,6 +2652,7 @@ if (detail.heading) {
 }
 
 const isDescription = detail.label === "Description";
+
 
 const columnClass = isDescription ? "col-12" : "col-6";
 
