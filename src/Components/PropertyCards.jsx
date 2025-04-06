@@ -32,7 +32,6 @@ import {  MdElevator   } from "react-icons/md";
 
 const PropertyCards = ({phoneNumber}) => {
   const [properties, setProperties] = useState([]);
-  // const [filters, setFilters] = useState({ id: '', price: '', propertyMode: '', city: '' });
   const [filters, setFilters] = useState({ 
     id: '', 
     minPrice: '', 
@@ -213,8 +212,7 @@ const PropertyCards = ({phoneNumber}) => {
                 margin: 0,
               }}
             >
-          
-
+       
 {filteredOptions.map((option, index) => (
   <li
     key={index}
@@ -281,7 +279,9 @@ const PropertyCards = ({phoneNumber}) => {
   
 
   const handleCardClick = (ppcId, phoneNumber) => {
-    navigate("/detail", { state: { ppcId, phoneNumber } });
+    navigate(`/detail/${ppcId}`, { state: { phoneNumber } });
+
+    // navigate("/detail", { state: { phoneNumber } });
   };
   // const formattedPrice = new Intl.NumberFormat('en-IN').format(property.price); // Indian-style number format
   return (
@@ -295,7 +295,10 @@ const PropertyCards = ({phoneNumber}) => {
             className="d-flex flex-column justify-content-center align-items-center "
             style={{
               height: '50px', width: '50px', background: '#2F747F', borderRadius: '50%',
-              position: 'fixed', right: window.innerWidth > 800 ? "35%" : "15%", bottom: '15%', zIndex: '1',
+              position: 'fixed',
+              right: 'calc(50% - 187.5px + 10px)', // Center - half of 375px + some offset
+              bottom: '15%', 
+              zIndex: '1',
             }}
             onClick={() => setIsFilterPopupOpen(true)}
           >
@@ -330,6 +333,9 @@ const PropertyCards = ({phoneNumber}) => {
         height: "100%",
       }}
     />
+
+ 
+
     {/* Icons */}
     <div
       style={{
@@ -394,6 +400,9 @@ const PropertyCards = ({phoneNumber}) => {
                 Negotiable                </span> 
                   </h6>
                </div>
+               {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                 <h4 className="m-0" style={{ color:'#2F747F', fontSize:'13px'}}> Negotiable: <span style={{ color:'#555555' }}>{property.negotiation || 'N/A'}</span></h4>
+               </div> */}
               </div>
             </div>
           </div>
@@ -412,22 +421,22 @@ const PropertyCards = ({phoneNumber}) => {
 
       {/* Basic Filters Popup */}
      {isFilterPopupOpen && (
-  <div
-    style={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '90%', // Responsive width
-      maxWidth: '400px', // Prevents stretching on larger screens      maxHeight: '60vh',
-      overflowY: 'scroll',
-      scrollbarWidth: 'none',
-      msOverflowStyle: 'none',
-      background: '#fff',
-      padding: '20px',
-      boxShadow: '0px 0px 10px rgba(0,0,0,0.5)',
-      zIndex: 2,
-    }}
+  <div 
+  style={{
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '90%', // Responsive width
+    maxWidth: '400px', // Prevents stretching on larger screens
+    maxHeight: '60vh',
+    overflowY: 'auto',
+    background: '#fff',
+    padding: '20px',
+    boxShadow: '0px 0px 10px rgba(0,0,0,0.5)',
+    zIndex: 2,
+    borderRadius: '8px',
+  }}
   >
     <style>
       {`
@@ -573,7 +582,7 @@ const PropertyCards = ({phoneNumber}) => {
         <FaTools className="me-1" /> Advanced Filters
       </button>
       <button
-        className="btn rounded-0 mt-1 w-30" style={{background:"black", color:"#ffffff"}}
+        className="btn rounded-0 mt-1 ms-1 w-30" style={{background:"black", color:"#ffffff"}}
         onClick={() => setIsFilterPopupOpen(false)}
       >
         <FaTimes className="me-1" /> Cancel
@@ -593,7 +602,8 @@ const PropertyCards = ({phoneNumber}) => {
       left: '50%',
       transform: 'translate(-50%, -50%)',
       width: '90%', // Responsive width
-      maxWidth: '400px', // Prevents stretching on larger screens      maxHeight: '60vh',
+      maxWidth: '400px',
+      maxHeight: '60vh',
       overflowY: 'scroll',
       scrollbarWidth: 'none',
       msOverflowStyle: 'none',

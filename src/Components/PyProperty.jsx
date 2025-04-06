@@ -1,132 +1,3 @@
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-
-// const PyProperty = () => {
-//   const [properties, setProperties] = useState([]);
-//   const [error, setError] = useState("");
-
-//   // Fetch Puducherry properties
-//   useEffect(() => {
-//     const fetchProperties = async () => {
-//       try {
-//         const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-Pudhucherry-properties`);
-//         setProperties(response.data.data);
-//         setError("");
-//       } catch (error) {
-//         setError("Failed to fetch properties.");
-//       }
-//     };
-//     fetchProperties();
-//   }, []);
-
-//   return (
-//     <div>
-//       <h2>Puducherry Property Listings</h2>
-//       {error && <p style={{ color: "red" }}>{error}</p>}
-
-//       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px", marginTop: "20px" }}>
-//         {properties.map((property) => (
-//           <div key={property._id} style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "15px", boxShadow: "2px 2px 10px rgba(0,0,0,0.1)" }}>
-//             <h3>{property.title}</h3>
-//             <p><strong>State:</strong> {property.state}</p>
-//             <p><strong>City:</strong> {property.city}</p>
-//             <p><strong>Price:</strong> ₹{property.price}</p>
-//             <p><strong>Owner:</strong> {property.ownerName}</p>
-//             <p><strong>Contact:</strong> {property.phoneNumber}</p>
-//             <p>{property.ppcId}</p>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PyProperty;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState, useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-
-// const PyProperty = () => {
-//   const [properties, setProperties] = useState([]);
-//   const [error, setError] = useState("");
-//   const navigate = useNavigate();
-
-//   // Fetch Puducherry properties
-//   useEffect(() => {
-//     const fetchProperties = async () => {
-//       try {
-//         const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-Pudhucherry-properties`);
-//         setProperties(response.data.data);
-//         setError("");
-//       } catch (error) {
-//         setError("Failed to fetch properties.");
-//       }
-//     };
-//     fetchProperties();
-//   }, []);
-
-//   const handleCardClick = (ppcId, phoneNumber) => {
-//     navigate("/detail", { state: { ppcId, phoneNumber } });
-//   };
-
-//   return (
-//     <div>
-//       <h2>Puducherry Property Listings</h2>
-//       {error && <p style={{ color: "red" }}>{error}</p>}
-
-//       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px", marginTop: "20px" }}>
-//         {properties.map((property) => (
-//           <div 
-//             key={property._id} 
-//             onClick={() => handleCardClick(property.ppcId, property.phoneNumber)}
-//             style={{ cursor: "pointer", border: "1px solid #ddd", borderRadius: "10px", padding: "15px", boxShadow: "2px 2px 10px rgba(0,0,0,0.1)" }}
-//           >
-//             <h3>{property.title}</h3>
-//             <p><strong>State:</strong> {property.state}</p>
-//             <p><strong>City:</strong> {property.city}</p>
-//             <p><strong>Price:</strong> ₹{property.price}</p>
-//             <p><strong>Owner:</strong> {property.ownerName}</p>
-//             <p><strong>Contact:</strong> {property.phoneNumber}</p>
-//             <p>{property.ppcId}</p>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PyProperty;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -167,7 +38,9 @@ const PyProperty = () => {
   }, []);
 
   const handleCardClick = (ppcId, phoneNumber) => {
-    navigate("/detail", { state: { ppcId, phoneNumber } });
+    // navigate("/detail", { state: { ppcId, phoneNumber } });
+    navigate(`/detail/${ppcId}`, { state: {phoneNumber } });
+
   };
 
   return (
@@ -182,19 +55,6 @@ const PyProperty = () => {
    
       <div style={{ overflowY: 'auto', fontFamily:"Inter, sans-serif" }}>
       {properties.map((property) => (
-          // <div 
-          //   key={property._id} 
-          //   onClick={() => handleCardClick(property.ppcId, property.phoneNumber)}
-          //   style={{ cursor: "pointer", border: "1px solid #ddd", borderRadius: "10px", padding: "15px", boxShadow: "2px 2px 10px rgba(0,0,0,0.1)" }}
-          // >
-          //   <h3>{property.title}</h3>
-          //   <p><strong>State:</strong> {property.state}</p>
-          //   <p><strong>City:</strong> {property.city}</p>
-          //   <p><strong>Price:</strong> ₹{property.price}</p>
-          //   <p><strong>Owner:</strong> {property.ownerName}</p>
-          //   <p><strong>Contact:</strong> {property.phoneNumber}</p>
-          //   <p>{property.ppcId}</p>
-          // </div>
           <div 
           key={property._id}
           className="card mb-3 shadow rounded-4"
@@ -286,9 +146,6 @@ height: "20px",
       Negotiable                </span> 
         </h6>
      </div>
-     {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-       <h4 className="m-0" style={{ color:'#2F747F', fontSize:'13px'}}> Negotiable: <span style={{ color:'#555555' }}>{property.negotiation || 'N/A'}</span></h4>
-     </div> */}
     </div>
   </div>
 </div>

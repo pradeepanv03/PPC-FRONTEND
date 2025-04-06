@@ -1,8 +1,4 @@
 
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaPhone, FaRupeeSign } from "react-icons/fa";
@@ -26,23 +22,6 @@ export default function DetailBuyerAssistance() {
   const [requestData, setRequestData] = useState(null);
 const [matchedProperties, setMatchedProperties] = useState([]);
 
-
-
-  // useEffect(() => {
-  //   const fetchRequest = async () => {
-  //     try {
-  //       const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-buyerAssistance/${id}`);
-  //       setRequestData(response.data.data);
-  //     } catch (error) {
-  //       setError("Error fetching data");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (id) fetchRequest();
-  // }, [id]);
-
   useEffect(() => {
     const fetchRequest = async () => {
       try {
@@ -50,13 +29,7 @@ const [matchedProperties, setMatchedProperties] = useState([]);
         const data = response.data.data;
         setRequestData(data);
   
-        // if (data?.interestedUserPhone) {
-        //   // Fetch matched properties directly from the backend
-        //   const matchedResponse = await axios.get(
-        //     `${process.env.REACT_APP_API_URL}/fetch-owner-matched-properties?phoneNumber=${data.buyerPhoneNumber}`
-        //   );
-        //   setMatchedProperties(matchedResponse.data.properties);
-        // }
+       
         if (data?.interestedUserPhone) {
           const matchedResponse = await axios.get(
             `${process.env.REACT_APP_API_URL}/fetch-owner-matched-properties?phoneNumber=${data.buyerPhoneNumber}`
@@ -79,7 +52,9 @@ const [matchedProperties, setMatchedProperties] = useState([]);
     if (!requestData) return <p>No data found.</p>;
   
     const handleViewMore = (phoneNumber, ppcId) => {
-      navigate("/detail", { state: { ppcId, phoneNumber } });
+      // navigate("/detail", { state: { ppcId, phoneNumber } });
+      navigate(`/detail/${ppcId}`, { state: {phoneNumber } });
+
     };
   
   return (
@@ -310,10 +285,6 @@ const [matchedProperties, setMatchedProperties] = useState([]);
     REMOVE
   </button>
 
-  {/* You can add the "MATCHED PROP" button here if needed */}
-  {/* <button className="btn text-white px-3 py-1 mx-1" style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}>
-    MATCHED PROP
-  </button> */}
 
   <div className="d-flex flex-column align-items-center justify-content-center">
     {matchedProperties.length > 0 ? (

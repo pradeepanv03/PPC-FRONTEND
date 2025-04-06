@@ -1,7 +1,6 @@
 
-
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -21,7 +20,6 @@ import { FaFacebook, FaRegHeart , FaLinkedin, FaPhone, FaRupeeSign, FaShareAlt, 
 import icon1 from '../Assets/ico_interest_xd.png';
 import icon2 from '../Assets/ico_report_soldout_xd.png';
 import icon3 from '../Assets/help1.png';
-// import contact from '../Assets/contact.png';
 import {  FaBalanceScale, FaFileAlt, FaGlobeAmericas, FaMapMarkerAlt, FaDoorClosed, FaMapSigns } from "react-icons/fa";
 import { MdApproval, MdTimer, MdHomeWork, MdHouseSiding, MdOutlineKitchen, MdEmail, MdLocationCity, MdOutlineAccessTime , MdPhone } from "react-icons/md";
 import {  BsBarChart } from "react-icons/bs";
@@ -30,16 +28,23 @@ import { GiStairs, GiForkKnifeSpoon, GiWindow } from "react-icons/gi";
 import { TiContacts } from "react-icons/ti";
 import contact from '../Assets/contact.png';
 import { toast, ToastContainer } from "react-toastify";
-// import { ToWords } from 'to-words';
-
-
 import { ToWords } from 'to-words';
 
-
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  LinkedinShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  WhatsappIcon,
+  LinkedinIcon,
+} from "react-share";
 
 const Details = () => {
   const [imageError, setImageError] = useState({});
-  
+  const [showOptions, setShowOptions] = useState(false);
+
   const handleImageError = (index) => {
     setImageError((prev) => ({ ...prev, [index]: true }));
   };
@@ -71,7 +76,9 @@ const Details = () => {
   const [interestClicked, setInterestClicked] = useState(false);
 
   const location = useLocation();
-  const { ppcId, phoneNumber } = location.state || {};
+  const { ppcId } = useParams();
+
+  const {  phoneNumber } = location.state || {};
   const [price, setPrice] = useState("");
   const [properties, setProperties] = useState([]);
   
@@ -99,10 +106,6 @@ const Details = () => {
     }
   }, [ppcId]);
 
-//    // State to track if each action has been completed
-//  const [interestClicked, setInterestClicked] = useState(
-//   JSON.parse(localStorage.getItem(`interestSent-${ppcId}`)) || false
-// );
 const [soldOutClicked, setSoldOutClicked] = useState(
   JSON.parse(localStorage.getItem(`soldOutReported-${ppcId}`)) || false
 );
@@ -312,37 +315,6 @@ useEffect(() => {
       };
   const closeModal = () => setShowModal(false);
 
-
-  // const handleOwnerContactClick = async () => {
-  //   try {
-  
-  //     if (!phoneNumber || !ppcId) {
-  //       setMessage("Phone number and Property ID are required.");
-  //       return;
-  //     }
-  
-  //     // Send data to the backend to request owner contact details
-  //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
-  //       phoneNumber,
-  //       ppcId,
-  //     });
-  
-  //     // Get the postedUserPhoneNumber from the response
-  //     const postedUserPhoneNumber = response.data.postedUserPhoneNumber;
-  
-  //     // Handle the response message and display the property owner's phone number
-  //     setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
-  //     setPostedUserPhoneNumber(postedUserPhoneNumber); // Save the phone number for later use/display
-  //     // setShowOwnerContact(true);  
-
-  //     toggleContactDetails(); 
-  //   } catch (error) {
-  //     setMessage("Failed to fetch owner contact details.");
-  //   }
-  // };
-
- 
-
   const toggleContactDetails = () => {
     setShowContactDetails(prevState => !prevState);
   };
@@ -424,35 +396,6 @@ useEffect(() => {
       ];
 
 
-
-
-
-// const handleInterestClick = async () => {
-//   if (!phoneNumber || !ppcId) {
-//     setMessage("Phone number and Property ID are required.");
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
-//       phoneNumber,
-//       ppcId,
-//     });
-
-//     const { message, status } = response.data;
-
-//     if (status === "sendInterest") {
-//       setMessage("Interest sent successfully!");
-//       setInterestClicked(true);
-//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true));
-//     } else if (status === "alreadySaved") {
-//       setMessage("Interest already recorded for this property.");
-//     }
-//   } catch (error) {
-//     setMessage(error.response?.data?.message || "Something went wrong.");
-//   }
-// };
-
 const handleOwnerContactClick = async () => {
   try {
     if (!phoneNumber || !ppcId) {
@@ -489,16 +432,16 @@ const handleOwnerContactClick = async () => {
   }
 };
 
-
 const handleInterestClick = async () => {
   if (!phoneNumber || !ppcId) {
     setMessage("Phone number and Property ID are required.");
     return;
   }
 
-  // Prevent clicking if already sent
-  if (interestClicked) {
+  // Prevent multiple clicks
+  if (interestClicked || localStorage.getItem(`interestSent-${ppcId}`)) {
     setMessage("Interest already recorded for this property.");
+    setInterestClicked(true);
     return;
   }
 
@@ -513,15 +456,18 @@ const handleInterestClick = async () => {
     if (status === "sendInterest") {
       setMessage("Interest sent successfully!");
       setInterestClicked(true);
-      localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true)); // Store interest status
+      localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true));
     } else if (status === "alreadySaved") {
       setMessage("Interest already recorded for this property.");
-      setInterestClicked(true); // Update UI immediately
+      setInterestClicked(true);
     }
   } catch (error) {
-    setMessage(error.response?.data?.message || "Something went wrong.");
+    const errMsg = error.response?.data?.message || "Something went wrong.";
+    setMessage(errMsg);
+    console.error("Interest Error:", error);
   }
 };
+
 
 const handleReportSoldOut = async () => {
   if (!phoneNumber || !ppcId) {
@@ -621,7 +567,6 @@ const confirmActionHandler = (actionType, actionMessage) => {
   });
 };
 
-
 const cards = [
   {
     img: icon1,
@@ -711,7 +656,6 @@ const handleHeartClick = async () => {
 
 
 
-
   const handleShareClick = () => {
     setShowShareOptions(!showShareOptions);
   };
@@ -762,7 +706,13 @@ const priceInWords = propertyDetails && propertyDetails.price
 const handlePageNavigation = () => {
   navigate('/mobileviews'); // Redirect to the desired path
 };
-  
+
+
+  const toggleShareOptions = () => {
+    setShowOptions(!showOptions);
+  };
+const currentUrl = `${window.location.origin}${location.pathname}`; // <- Works for localhost or live
+
   return (
     <div className="container d-flex align-items-center justify-content-center p-0">
 
@@ -955,17 +905,18 @@ const handlePageNavigation = () => {
        Negotiation: {propertyDetails.negotiation}
     </span>
   </p>
+
   {/* ({priceInWords})  */}
 
         <div className="d-flex gap-3">
           <FaShareAlt
             style={{ cursor: "pointer", fontSize: "20px", color: "#30747F" }}
-            onClick={handleShareClick}
+            // onClick={handleShareClick}
+            onClick={toggleShareOptions}
+             url={currentUrl}
+             title="Share this page"
           />
-          {/* <FaHeart
-            style={{ cursor: "pointer", fontSize: "20px", color: isHeartClicked ? "red" : "#30747F" }}
-            onClick={handleHeartClick}
-          /> */}
+  
           {isHeartClicked ? (
   <FaHeart 
     style={{ cursor: "pointer", fontSize: "20px", color: "red" }} 
@@ -977,7 +928,55 @@ const handlePageNavigation = () => {
     onClick={handleHeartClick} 
   />
 )}
+  
+       {showOptions && (
+        <div
+          onClick={toggleShareOptions}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 999,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: "flex",
+              gap: "15px",
+              padding: "20px",
+              background: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+              transform: showOptions ? "scale(1)" : "scale(0.9)",
+              opacity: showOptions ? 1 : 0,
+              transition: "all 0.3s ease",
+            }}
+          >
+            <FacebookShareButton url={currentUrl}>
+              <FacebookIcon size={40} round />
+            </FacebookShareButton>
 
+            <TwitterShareButton url={currentUrl} title={currentUrl}>
+              <TwitterIcon size={40} round />
+            </TwitterShareButton>
+
+            <WhatsappShareButton url={currentUrl} title={currentUrl}>
+              <WhatsappIcon size={40} round />
+            </WhatsappShareButton>
+
+            <LinkedinShareButton url={currentUrl}>
+              <LinkedinIcon size={40} round />
+            </LinkedinShareButton>
+          </div>
+        </div>
+      )}
         </div>
       </div>
       <p>({priceInWords})</p>
@@ -1221,16 +1220,6 @@ return (
     </div>
   </div>
 )}
-{/* 
-     {showPopup && (
-  <div className="popup">
-    <div className="popup-content">
-      <p>{popupMessage}</p>
-      <button onClick={() => { confirmAction(); setShowPopup(false); }}>Yes</button>
-      <button onClick={() => setShowPopup(false)}>No</button>
-    </div>
-  </div>
-)} */}
 
 
 {message && (
@@ -1267,13 +1256,5 @@ return (
 };
 
 export default Details;
-
-
-
-
-
-
-
-
 
 

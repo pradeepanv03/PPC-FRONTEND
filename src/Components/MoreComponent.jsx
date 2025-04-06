@@ -1,9 +1,5 @@
 
 
-
-
-
-
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './MoreComponent.css';
@@ -71,9 +67,28 @@ const [userCount, setUserCount] = useState(0);
 const [deleteCount,setDeleteCount]= useState(0);
 
 const [notificationCount, setNotificationCount] = useState(0);
+const [notificationUserCount, setNotificationUserCount] = useState(0);
 
   const [planCount, setPlanCount] = useState(0);
 
+
+  useEffect(() => {
+    const fetchNotificationUserCount = async () => {
+      if (!phoneNumber) return;
+  
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_API_URL}/notification-user-count?phoneNumber=${phoneNumber}`
+        );
+        setNotificationUserCount(data.count);
+      } catch (error) {
+        setError("Error fetching notification count");
+      }
+    };
+  
+    fetchNotificationUserCount();
+  }, [phoneNumber]);
+  
 
   useEffect(() => {
 
@@ -615,13 +630,18 @@ fetchContactBuyerCount();
     count={deleteCount}   
 />
 
-
+{/* 
 <MenuLink 
     to={`/notification`} 
     label="Notifications "  
     count={notificationCount}   
-/>
+/> */}
 
+<MenuLink 
+  to="/notification" 
+  label="Notifications"  
+  count={(notificationCount || 0) + (notificationUserCount || 0)} 
+/>
 
 
 <MenuLink 
