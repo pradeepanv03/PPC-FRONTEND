@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -24,6 +25,7 @@ const Notification = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+
   const storedPhoneNumber =
     location.state?.phoneNumber || localStorage.getItem("phoneNumber") || "";
   const [userPhoneNumber] = useState(storedPhoneNumber);
@@ -31,6 +33,55 @@ const Notification = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+
+  
+  const [showUnreadOnly, setShowUnreadOnly] = useState(false);
+
+  
+
+
+  const fetchUnreadNotifications = async (phoneNumber) => {
+    if (!phoneNumber) {
+      setError("No phone number found.");
+      return;
+    }
+  
+    setLoading(true);
+    setError("");
+  
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/get-unread-notifications`,
+        { params: { phoneNumber } }
+      );
+  
+      const readIds = getReadNotificationsFromStorage();
+      const updated = (res.data.notifications || []).map((n) => ({
+        ...n,
+        isRead: readIds.includes(n._id),
+      }));
+  
+      setNotifications(updated);
+    } catch (err) {
+      console.error("Error fetching unread notifications:", err);
+      setError("Error fetching unread notifications.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  useEffect(() => {
+    if (userPhoneNumber) {
+      if (showUnreadOnly) {
+        fetchUnreadNotifications(userPhoneNumber);
+      }
+    }
+  }, [userPhoneNumber, showUnreadOnly]);
+  
+
+
 
   const fetchAllNotifications = async (phoneNumber) => {
     if (!phoneNumber) {
@@ -122,10 +173,6 @@ const Notification = () => {
     <div className="container d-flex align-items-center justify-content-center p-0">
       <div className="d-flex flex-column align-items-center justify-content-center m-0" 
         style={{ maxWidth: '500px', margin: 'auto', width: '100%' }}>
-              
-              
-
-
       {/* Header */}
       <div
         className="d-flex align-items-center justify-content-start w-100"
@@ -139,7 +186,32 @@ const Notification = () => {
         </h3>
       </div>
       <div className="row g-2 w-100">
-
+      <div className="d-flex justify-content-between mb-3 pt-1">
+  <button
+    style={{
+      backgroundColor: !showUnreadOnly ? '#F9FAFC' : 'transparent',
+      color: 'black',
+      border: !showUnreadOnly ? 'none' : '1px solid #ccc',
+      boxShadow: !showUnreadOnly ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+    }}
+    className="btn w-50 me-2"
+    onClick={() => setShowUnreadOnly(false)}
+  >
+    Show All Notifications
+  </button>
+  <button
+    style={{
+      backgroundColor: showUnreadOnly ? '#F9FAFC' : 'transparent',
+      color: 'black',
+      border: showUnreadOnly ? 'none' : '1px solid #ccc',
+      boxShadow: showUnreadOnly ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+    }}
+    className="btn w-50"
+    onClick={() => setShowUnreadOnly(true)}
+  >
+    Show Unread Only
+  </button>
+</div>
       {/* Phone number */}
       {userPhoneNumber ? (
         <p className="text-lg font-medium mb-4">
@@ -160,78 +232,80 @@ const Notification = () => {
           {notifications.length > 0 ? (
             <div className="row">
               {notifications.map((notification) => (
-                <div
-                  key={notification._id}
-                  className="mb-3"
-                  onClick={() =>
-                    handleSingleNotificationClick(notification._id)
-                  }
-                  style={{
-                    cursor: "pointer",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <div
-                 className={`card ${notification.isRead ? "shadow-sm border" : ""}`}
-                 style={{
-                   backgroundColor: notification.isRead ? "#F9FAFC" : "#ffffff",
-                   borderRadius: "10px",
-                 }}
-                  >
-<div className="card-body d-flex flex-row justify-content-center align-items-center">
-{/* Image */}
+
+
+<div
+  key={notification._id}
+  className="mb-3"
+  onClick={() => handleSingleNotificationClick(notification._id)}
+  style={{
+    cursor: "pointer",
+    borderRadius: "10px",
+    position: "relative", // Make this relative to position the close button inside
+  }}
+>
   <div
-        className="me-3"
+    className={`card ${notification.isRead ? "shadow-sm border" : ""}`}
+    style={{
+      backgroundColor: notification.isRead ? "#F9FAFC" : "#ffffff",
+      borderRadius: "10px",
+      position: "relative", // Needed for positioning the delete button
+    }}
+  >
+    <div className="card-body d-flex flex-row align-items-center">
+      {/* Image */}
+      <div className="me-3">
+        <img
+          src={logo}
+          alt="Notification"
+          className="rounded-circle"
+          style={{ width: "50px", height: "50px" }}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="d-flex flex-grow-1 justify-content-between align-items-start">
+        <div>
+          {notification.ppcId && (
+            <h6 className="mb-1 text-primary">PPC ID: {notification.ppcId}</h6>
+          )}
+          {notification.type && (
+            <p className="mb-1 text-dark">Type: {notification.type}</p>
+          )}
+          <p className="mb-1 text-secondary">{notification.message}</p>
+          <p className="text-muted small mb-1">
+            {new Date(notification.createdAt).toLocaleString()}
+          </p>
+          <h6 className="mb-1 text-primary">
+            {notification.isRead ? "🔵 Read" : "🔴 Unread"}
+          </h6>
+        </div>
+      </div>
+
+      {/* X icon */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDeleteNotification(notification._id);
+        }}
+        className="position-absolute top-0 end-0 m-2 p-1 bg-light border-0 rounded-circle shadow-sm"
+        title="Delete notification"
+        style={{
+          width: "28px",
+          height: "28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "18px",
+          lineHeight: "1",
+          color: "#555",
+        }}
       >
-  <img
-      src={logo}
-      alt="Notification"
-      className="rounded-circle"
-      style={{ width: "50px", height: "50px" }}
-    />
-  </div>
-
-  {/* Content + Button in Flex */}
-  <div className="d-flex flex-grow-1 justify-content-between">
-    {/* Text Content */}
-    <div>
-      {notification.ppcId && (
-        <h6 className="mb-1 text-primary">
-          PPC ID: {notification.ppcId}
-        </h6>
-      )}
-      {notification.type && (
-        <p className="mb-1 text-dark">
-          Type: {notification.type}
-        </p>
-      )}
-      <p className="mb-1 text-secondary">
-        {notification.message}
-      </p>
-      <p className="text-muted small mb-1">
-        {new Date(notification.createdAt).toLocaleString()}
-      </p>
-      <h6 className="mb-1 text-primary">
-        {notification.isRead ? "🔵 Read" : "🔴 Unread"}
-      </h6>
+        &times;
+      </button>
     </div>
-
-    {/* Delete Button aligned to right */}
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        handleDeleteNotification(notification._id);
-      }}
-      className="btn btn-sm ms-3 border-0"
-      title="Delete notification"
-    >
-      🗑️
-    </button>
   </div>
-</div>
-
                   </div>
-                </div>
               ))}
             </div>
           ) : (
@@ -248,3 +322,5 @@ const Notification = () => {
   );
 };
 export default Notification;
+
+
