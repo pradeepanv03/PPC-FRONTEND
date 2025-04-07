@@ -124,7 +124,7 @@ export default function RouterPage() {
         <Route path='/add-form' element={<AddProps/>}/>
         <Route path='/add-property' element={<AddProperties/>}/>
         <Route path='/edit-form' element={isAuthenticated ? <EditForm phone={phoneNumber} /> : <App to="/" />} />
-        <Route path='/detail' element={isAuthenticated ? <Details phone={phoneNumber} /> : <App to="/" />} />
+        <Route path='/detail/:ppcId' element={isAuthenticated ? <Details phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/plans' element={isAuthenticated ? <PricingPlans phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/add-plan' element={isAuthenticated ? <AddPricingPlans phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/about' element={<About />} />

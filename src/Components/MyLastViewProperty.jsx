@@ -1,271 +1,200 @@
 
-import React, { useState } from "react";
-import { FaRulerCombined, FaBed, FaUserAlt, FaCalendarAlt, FaRupeeSign , FaCamera, FaEye } from "react-icons/fa";
-import { Helmet } from "react-helmet";
-import { Container, Row, Col, Nav, Tab } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaCalendarAlt, FaCamera, FaEye, FaRupeeSign, FaUserAlt } from "react-icons/fa";
+import pic from '../Assets/Mask Group 3@2x.png'; // Correct path
+import myImage1 from '../Assets/Rectangle 145.png'; // Correct path
+import myImage from '../Assets/Rectangle 146.png'; // Correct path
 
-const MyLastViewProperty = () => {
-  const [properties, setProperties] = useState([
-    {
-      _id: "1",
-      ppcId: "PUC-001",
-      photos: [],
-      propertyMode: "Sale",
-      propertyType: "Apartment",
-      city: "Pondicherry",
-      totalArea: "1200 sq.ft",
-      bedrooms: 3,
-      ownership: "Owner",
-      bestTimeToCall: "9 AM - 5 PM",
-      price: "₹50,00,000",
-      removed: false,
-    },
-    {
-      _id: "2",
-      ppcId: "PUC-002",
-      photos: [],
-      propertyMode: "Rent",
-      propertyType: "Villa",
-      city: "Chennai",
-      totalArea: "2000 sq.ft",
-      bedrooms: 4,
-      ownership: "Agent",
-      bestTimeToCall: "10 AM - 6 PM",
-      price: "₹1,00,000",
-      removed: false,
-    },
-    {
-      _id: "3",
-      ppcId: "PUC-003",
-      photos: [],
-      propertyMode: "Sale",
-      propertyType: "Plot",
-      city: "Bangalore",
-      totalArea: "5000 sq.ft",
-      bedrooms: null,
-      ownership: "Owner",
-      bestTimeToCall: "11 AM - 7 PM",
-      price: "₹75,00,000",
-      removed: true,
-    },
-  ]);
+const LastViewedProperty = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const filterProperties = (removedStatus) => {
-    return properties.filter(property => property.removed === removedStatus);
+  const storedPhoneNumber =
+    location.state?.phoneNumber || localStorage.getItem("phoneNumber") || "";
+  const [phoneNumber, setPhoneNumber] = useState(storedPhoneNumber);
+
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchLastViewed = async () => {
+      if (!phoneNumber) {
+        setError("Phone number is required");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/user-get-last-view/${phoneNumber}`
+        );
+        setProperty(response.data);
+      } catch (err) {
+        setError(
+          err.response?.data?.message || "Error fetching last viewed property"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLastViewed();
+  }, [phoneNumber]);
+
+  if (loading) return <p>Loading last viewed property...</p>;
+  if (error) return <p className="text-danger">{error}</p>;
+  if (!property) return <p>No last viewed property found.</p>;
+
+  const { property: propDetails, viewedAt } = property;
+
+  const handlePageNavigation = () => {
+    navigate('/mobileviews'); // Redirect to the desired path
   };
-
   return (
-    <Container fluid style={{ fontFamily: '"inter", sans-serif', width:"470px" }}>
-      <Helmet>
-        <title>Pondy Property | Properties</title>
-      </Helmet>
+        <div className="container d-flex align-items-center justify-content-center p-0">
+        <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{ maxWidth: '500px', margin: 'auto', width: '100%' }}>
+        
+        <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
+              <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
+            </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>My Last View Property  </h3> </div>
+    <div className="row g-2 w-100">
+    
+    <div 
+  className="card mb-1 shadow rounded-4"
+  style={{ width: '100%', height: 'auto', background: '#F9F9F9', overflow: 'hidden' }}
+>
+  <div className="row g-0">
+    
+    {/* Left: Image and Icons */}
+    <div className="col-md-4 col-4 d-flex flex-column align-items-center">
+      <div style={{ position: "relative", width: "100%", height: window.innerWidth <= 640 ? "180px" : "170px" }}>
+        <img
+          src={
+            propDetails.photos && propDetails.photos.length > 0
+              ? propDetails.photos[0]
+              : pic
+          }
+          alt="property"
+          style={{
+            objectFit: "cover",
+            objectPosition: "center",
+            width: "100%",
+            height: "100%",
+          }}
+          className="rounded-start"
+        />
 
-      <Tab.Container defaultActiveKey="all">
-        <Row className="mb-4">
-          <Col>
-            <Nav variant="tabs" className="w-100">
-              {/* All Tab */}
-              <Nav.Item className="w-50">
-                <Nav.Link className="text-center"
-                  eventKey="all" 
-                  style={{
-                    backgroundColor: '#4F4B7E', 
-                    color: 'white', 
-                    padding: '10px 20px', 
-                    borderRadius: '5px'
-                  }}
-                >
-                  ALL
-                </Nav.Link>
-              </Nav.Item>
+        {/* Bottom icons on image */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "0px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "0 5px",
+          }}
+        >
+          <span
+            className="d-flex justify-content-center align-items-center"
+            style={{
+              color: "#fff",
+              backgroundImage: `url(${myImage})`,
+              width: "45px",
+              height: "20px",
+              fontSize: "11px",
+              borderRadius: "3px",
+            }}
+          >
+            <FaCamera className="me-1" size={13} />
+            {propDetails.photos?.length || 0}
+          </span>
+          <span
+            className="d-flex justify-content-center align-items-center"
+            style={{
+              color: "#fff",
+              backgroundImage: `url(${myImage1})`,
+              width: "45px",
+              height: "20px",
+              fontSize: "11px",
+              borderRadius: "3px",
+            }}
+          >
+            <FaEye className="me-1" size={15} />
+            {propDetails.views || 0}
+          </span>
+        </div>
+      </div>
+    </div>
 
-              {/* Removed Tab */}
-              <Nav.Item className="w-50">
-                <Nav.Link className="text-center"
-                  eventKey="removed" 
-                  style={{
-                    backgroundColor: '#FF0000', 
-                    color: 'white', 
-                    padding: '10px 20px', 
-                    borderRadius: '5px'
-                  }}
-                >
-                  REMOVED
-                </Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </Col>
-        </Row>
+    {/* Right: Property Details */}
+    <div className="col-md-8 col-8 ps-2">
+      <div className="d-flex justify-content-start">
+        <p className="mb-1" style={{ color: '#5E5E5E', fontWeight: 500 }}>
+          {propDetails.propertyMode || 'N/A'}
+        </p>
+      </div>
 
-        <Row className="g-3">
-          <Col lg={12} className="d-flex align-items-center justify-content-center">
-            <Tab.Content>
-              {/* Tab for All Properties */}
-              <Tab.Pane eventKey="all">
-                <div style={{ maxHeight: '70vh', overflowY: 'scroll', scrollbarWidth: 'none' }}>
-                  {filterProperties(false).length > 0 ? (
-                    filterProperties(false).map((property) => (
-                      <div 
-                        key={property._id} 
-                        className="card mb-3 shadow p-1" 
-                        style={{
-                          width: '450px', 
-                          minWidth: '400px', 
-                          background: '#F9F9F9'
-                        }}
-                      >
-                        <div className="row g-0">
-                          {/* Image Column */}
-                          <div className="col-md-4 col-4 d-flex flex-column justify-content-between align-items-center">
-                            <div className="text-white py-1 px-2 text-center" style={{ width: '100%', background: "#2F747F" }}>
-                              PUC- {property.ppcId}
-                            </div>
-                            <div className="img-container" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-                              <img
-                                src={property.photos && property.photos.length > 0
-                                  ? `http://localhost:5006/${property.photos[0]}`
-                                  : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
-                                className="img-fluid"
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              />
-                            </div>
-                                <div className="d-flex justify-content-between mt-2 w-100">
-                                          <span className="p-2" style={{ color:'#fff', background:'#2F747F', fontSize:'12px' , borderRadius:'10% 75% 30% 10%'}}> <FaCamera className="me-1"/> 1</span>
-                                          <span className="p-2" style={{ color:'#fff',  background:'#2F747F', fontSize:'12px', borderRadius:'75% 20% 30% 10%'}}>  <FaEye className="me-1" />1</span>
-                                           </div>
-                          </div>
+      <p className="fw-bold m-0" style={{ color: '#000000' }}>
+        {propDetails.propertyType || 'N/A'}
+      </p>
+      <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 500 }}>
+        {propDetails.location || 'Not specified'}
+      </p>
 
-                          {/* Content Column */}
-                          <div className="col-md-8 col-8 p-1">
-                            <div className="row">
-                            <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                            <p className="m-0">{property.propertyMode}</p>
+      <div className="card-body ps-2 m-0 pt-0 pe-2 pb-0 d-flex flex-column justify-content-center">
+        <div className="row">
+          <div className="col-6 d-flex align-items-center mt-1 mb-1">
+            <FaUserAlt className="me-2" color="#2F747F" />
+            <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 500 }}>
+              PPC ID: {propDetails.ppcId || "N/A"}
+            </span>
+          </div>
 
-                                </div>
-                                 <div className="col-6 d-flex align-items-center justify-content-end mt-1 mb-1">
-                                 <p className="m-0"><button className="btn" style={{background:"#FF0000", color:"#fff"}}>remove</button></p>
-                                </div>
-                            
-                            </div>
-                            <p className="m-0">{property.propertyType}</p>
-                            <p>{property.city}</p>
-                            <div className="card-body p-2 d-flex flex-column justify-content-center">
-                              <div className="row">
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.totalArea}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaBed className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.bedrooms}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaUserAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.ownership}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaCalendarAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.bestTimeToCall}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaRupeeSign className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.price}</span>
-                                </div>
-                                {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <p className="m-0" style={{ color: '#2F747F', fontSize: '14px' }}>
-                                    Negotiation: <span style={{ color: '#555555' }}>{property.negotiation}</span>
-                                  </p>
-                                </div> */}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>No properties available.</p>
-                  )}
-                </div>
-              </Tab.Pane>
+          <div className="col-6 d-flex align-items-center mt-1 mb-1">
+            <FaCalendarAlt className="me-2" color="#2F747F" />
+            <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 500 }}>
+              {viewedAt ? new Date(viewedAt).toLocaleString() : "Not available"}
+            </span>
+          </div>
 
-              {/* Tab for Removed Properties */}
-              <Tab.Pane eventKey="removed">
-                <div style={{ maxHeight: '70vh', overflowY: 'scroll', scrollbarWidth: 'none' }}>
-                  {filterProperties(true).length > 0 ? (
-                    filterProperties(true).map((property) => (
-                      <div 
-                        key={property._id} 
-                        className="card mb-3 shadow p-1" 
-                        style={{
-                          width: '450px', 
-                          minWidth: '400px', 
-                          background: '#F9F9F9'
-                        }}
-                      >
-                        <div className="row g-0">
-                          {/* Image Column */}
-                          <div className="col-md-4 col-4 d-flex flex-column justify-content-between align-items-center">
-                            <div className="text-white py-1 px-2 text-center" style={{ width: '100%', background: "#2F747F" }}>
-                              PUC- {property.ppcId}
-                            </div>
-                            <div className="img-container" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
-                              <img
-                                src={property.photos && property.photos.length > 0
-                                  ? `http://localhost:5006/${property.photos[0]}`
-                                  : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
-                                className="img-fluid"
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              />
-                            </div>
-                          </div>
+          <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
+            <h6 className="m-0">
+              <span
+                style={{
+                  fontSize: '17px',
+                  color: '#2F747F',
+                  fontWeight: 'bold',
+                  letterSpacing: "1px",
+                }}
+              >
+                <FaRupeeSign className="me-2" color="#2F747F" />
+                {propDetails.price ? propDetails.price.toLocaleString('en-IN') : 'N/A'}
+              </span>
+              <span
+                style={{
+                  color: '#2F747F',
+                  marginLeft: "5px",
+                  fontSize: '11px',
+                }}
+              >
+                Negotiable
+              </span>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
 
-                          {/* Content Column */}
-                          <div className="col-md-8 col-8 p-1">
-                          <div className="row">
-                            <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                            <p className="m-0">{property.propertyMode}</p>
-
-                                </div>
-                                 <div className="col-6 d-flex align-items-center justify-content-end mt-1 mb-1">
-                                 <p className="m-0"><button className="btn" style={{background:"#FF0000", color:"#fff"}}>undo</button></p>
-                                </div>
-                            
-                            </div>                            <p className="m-0">{property.propertyType}</p>
-                            <p>{property.city}</p>
-                            <div className="card-body p-2 d-flex flex-column justify-content-center">
-                              <div className="row">
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.totalArea}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaBed className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.bedrooms}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaUserAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.ownership}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaCalendarAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.bestTimeToCall}</span>
-                                </div>
-                                <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <FaRupeeSign className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.price}</span>
-                                </div>
-                                {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                  <p className="m-0" style={{ color: '#2F747F', fontSize: '14px' }}>
-                                    Negotiation: <span style={{ color: '#555555' }}>{property.negotiation}</span>
-                                  </p>
-                                </div> */}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>No removed properties.</p>
-                  )}
-                </div>
-              </Tab.Pane>
-            </Tab.Content>
-          </Col>
-        </Row>
-      </Tab.Container>
-    </Container>
   );
 };
 
-export default MyLastViewProperty;
+export default LastViewedProperty;

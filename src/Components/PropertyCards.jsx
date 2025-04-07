@@ -281,7 +281,6 @@ const PropertyCards = ({phoneNumber}) => {
   const handleCardClick = (ppcId, phoneNumber) => {
     navigate(`/detail/${ppcId}`, { state: { phoneNumber } });
 
-    // navigate("/detail", { state: { phoneNumber } });
   };
   // const formattedPrice = new Intl.NumberFormat('en-IN').format(property.price); // Indian-style number format
   return (

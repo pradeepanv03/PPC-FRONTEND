@@ -71,7 +71,6 @@ const Details = () => {
 
   const [imageCount, setImageCount] = useState(0);
   const [uploadedImages, setUploadedImages] = useState([]);
-  // const [isHeartClicked, setIsHeartClicked] = useState(false);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [interestClicked, setInterestClicked] = useState(false);
 
@@ -85,7 +84,6 @@ const Details = () => {
   const [photoRequested, setPhotoRequested] = useState(
     JSON.parse(localStorage.getItem(`photoRequested-${property?.ppcId}`)) || false
   );
-  // const [offerPrice, setofferPrice] = useState("");
   const [viewCount, setViewCount] = useState(0);
 
   const [isHeartClicked, setIsHeartClicked] = useState(() => {
@@ -338,17 +336,14 @@ useEffect(() => {
         { heading: true, label: "Basic Property Info" }, // Heading 1
         { icon: <MdHomeWork />, label: "Property Mode", value:  propertyDetails.propertyMode},
         { icon: <MdHouseSiding />, label: "Property Type", value: propertyDetails.propertyType },
-        // { icon: <MdOutlineCurrencyRupee />, label: "Price", value: propertyDetails.price },
-        // { icon: <FaBalanceScale />, label: "Negotiation", value: propertyDetails.negotiation },
+
         { icon: <AiOutlineColumnWidth />, label: "Length", value: propertyDetails.length },
         { icon: <AiOutlineColumnHeight />, label: "Breadth", value: propertyDetails.breadth  },
-        // { icon: <RiLayoutLine />, label: "Total Area", value: propertyDetails.totalArea},
         {
           icon: <RiLayoutLine />,
           label: "Total Area",
           value: `${propertyDetails.totalArea} ${propertyDetails.areaUnit}`, // Combined value
         },
-        // { icon: <BiRuler />, label: "Area Unit", value: propertyDetails.areaUnit },
         { icon: <FaUserAlt />, label: "Ownership", value: propertyDetails.ownership },
         { icon: <MdApproval />, label: "Property Approved", value: propertyDetails.propertyApproved },
         { icon: <MdTimer />, label: "Property Age", value: propertyDetails.propertyAge },
@@ -376,14 +371,11 @@ useEffect(() => {
         { icon: <BsGraphUp />, label: "Sale Mode", value: propertyDetails.salesMode },
         { icon: <BsBarChart />, label: "Sales Type", value: propertyDetails.salesType },
         { icon: <BiUser />, label: "Posted By", value: propertyDetails.postedBy },
-        // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
         { icon: <BiCalendar />, label: "Posted On", value: "Dec 20, 2024" },
         { heading: true, label: "Description"  }, // Heading 3
         { icon: <FaFileAlt />, label: "Description" ,value: propertyDetails.description },
       
-        // { heading: true, label: "Property Location Info" }, // Heading 4
       
-        // { icon: <BiMap />, label: "Location", value: "New York, USA" },
         { icon: <FaGlobeAmericas />, label: "Country", value: propertyDetails.country },
         { icon: <BiBuilding />, label: "State", value: propertyDetails.state },
         { icon: <MdLocationCity />, label: "City", value: propertyDetails.city },
@@ -1023,8 +1015,6 @@ if (detail.heading) {
 
 const isDescription = detail.label === "Description";
 
-// const isDescription = typeof detail.value === "string" && detail.value.trim() === formData.description.trim();
-// const columnClass = isDescription ? "col-12" : "col-6";
 const columnClass = isDescription ? "col-12" : "col-6";
 
 return (
@@ -1036,7 +1026,6 @@ return (
         width: "100%",
         height: isDescription ? "auto" : "100px",
         wordBreak: "break-word",
-        // height: detail.label === "Description" || detail.value === formData.description ? "auto" : "100px", // Full height for description
       }}
     >
       <span className="me-3 fs-3" style={{ color: "#30747F" }}>
@@ -1045,7 +1034,6 @@ return (
       <div>
       {!isDescription && <h6 className="mb-1">{detail.label || "N/A"}</h6>}  {/* ✅ Hide label for description */}
 
-      {/* <h6 className="mb-1">{isDescription ? "Description" : detail.label || "N/A"}</h6> */}
         <p
           className="mb-0 p-0"
           style={{
@@ -1088,7 +1076,6 @@ return (
       {showContactDetails && (
         <div className="mt-3">
           <p style={{color:'red'}}><strong style={{color:'black'}}>Name:</strong> {propertyDetails.ownerName || "Not Available"}</p>
-          {/* <p><strong>Phone Number:</strong> {propertyDetails.phoneNumber || "Not Available"}</p> */}
           <p style={{color:'red'}}><strong style={{color:'black'}}>Phone Number:</strong> <a href={`tel:${propertyDetails.phoneNumber}`} style={{ color: "red", textDecoration: "none" }}>{propertyDetails.phoneNumber || "Not Available"}</a></p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>Alternate Number:</strong> {propertyDetails.phoneNumber || "Not Available"}</p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>email:</strong> {propertyDetails.email || "Not Available"}</p>

@@ -533,9 +533,6 @@ fetchContactBuyerCount();
     
             if (response.status === 201) {
                 const ppcId = response.data.ppcId;
-    
-                // Corrected navigation
-                // navigate(`/add-property`, { state: { ppcId, phoneNumber } });
                 navigate(`/add-property/${phoneNumber}?ppcId=${ppcId}`);
 
             }
@@ -547,12 +544,9 @@ fetchContactBuyerCount();
 
     return (
         <div className="container mb-4 p-1" 
-        // style={{ fontFamily: "Inter, sans-serif", width: "100%", maxWidth: '600px' }}
         style={{
             fontFamily: "Inter, sans-serif",
             width: "100%",
-            // maxWidth: "600px",
-            // height: "80vh", // Adjust as needed
             overflowY: "auto",
             scrollbarWidth:"none"
         }}
@@ -649,8 +643,11 @@ fetchContactBuyerCount();
     label="My Plan "  
     count={planCount}   
 />
-
-            {/* <MenuLink to={`/my-profile/${phoneNumber}`} label="My Profile " /> */}
+<MenuLink 
+    to={`/my-last-property`} 
+    label="My last view property"  
+    count={planCount}   
+/>
          
 
         </ul> 
@@ -762,9 +759,7 @@ fetchContactBuyerCount();
                             <img src={imge3} alt="Buyer Menu" className="rounded" />
                         </div>
                         <ul className="list-group">
-                            {/* Example usage of MenuLink for buyer */}
-                            {/* <MenuLink to={`/interest-buyer/${phoneNumber}`} label="Buyer Interested " /> */}
-                           
+                          
                             <MenuLink  
     to={`/interest-buyer/${phoneNumber}`} 
     label="Buyer Interested"

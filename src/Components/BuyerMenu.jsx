@@ -629,7 +629,11 @@ fetchContactBuyerCount();
     label="My Plan "  
     count={planCount}   
 />
-
+<MenuLink 
+    to={`/my-last-property`} 
+    label="My last view property"  
+    count={planCount}   
+/>
             {/* <MenuLink to={`/my-profile/${phoneNumber}`} label="My Profile " /> */}
          
 

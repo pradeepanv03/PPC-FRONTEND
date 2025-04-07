@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './MoreComponent.css';
@@ -629,8 +623,11 @@ fetchContactBuyerCount();
     label="My Plan "  
     count={planCount}   
 />
-
-            {/* <MenuLink to={`/my-profile/${phoneNumber}`} label="My Profile " /> */}
+<MenuLink 
+    to={`/my-last-property`} 
+    label="My last view property"  
+    count={planCount}   
+/>
          
 
         </ul> 
@@ -742,8 +739,7 @@ fetchContactBuyerCount();
                             <img src={imge3} alt="Buyer Menu" className="rounded" />
                         </div>
                         <ul className="list-group">
-                            {/* Example usage of MenuLink for buyer */}
-                            {/* <MenuLink to={`/interest-buyer/${phoneNumber}`} label="Buyer Interested " /> */}
+                 
                            
                             <MenuLink  
     to={`/interest-buyer/${phoneNumber}`} 
